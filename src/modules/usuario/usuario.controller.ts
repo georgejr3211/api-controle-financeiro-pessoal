@@ -12,9 +12,12 @@ import { UsuarioService } from './usuario.service';
   model: {
     type: Usuario,
   },
+  routes: {
+    exclude: ['createManyBase', 'createOneBase', 'updateOneBase', 'replaceOneBase', 'deleteOneBase', 'getManyBase', 'getOneBase'],
+  },
   query: {
     join: {
-      anuncios: { allow: [] },
+      pessoa: { eager: true },
     },
     alwaysPaginate: true,
     maxLimit: 10,

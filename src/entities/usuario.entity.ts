@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { IsDefined, IsEmail, IsOptional } from 'class-validator';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { BaseColumn } from '../common/classes/base-columns';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Pessoa } from './pessoa.entity';
 
 const { CREATE, UPDATE } = CrudValidationGroups;
 
 @Entity('usuarios')
-export class Usuario {
+export class Usuario extends BaseColumn {
 
   @IsOptional()
   @PrimaryGeneratedColumn({ name: 'id_usuario' })
@@ -26,25 +28,17 @@ export class Usuario {
   senha: string;
 
   @ApiProperty()
-  @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
   @Column({ name: 'email_verificado', type: 'smallint', nullable: false, default: 0 })
   emailVerificado: number;
 
   @ApiProperty()
-  @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
   @Column({ name: 'codigo_recuperacao', type: 'int', nullable: true })
   codigoRecuperacao: number;
 
-  @ApiProperty()
   @IsOptional()
-  @Column({ type: 'smallint', nullable: false, default: 0 })
-  status: number;
-
-  @CreateDateColumn({ name: 'dt_cadastro', nullable: false })
-  dtCadastro: Date;
-
-  @CreateDateColumn({ name: 'dt_alteracao', nullable: false })
-  dtAlteracao: Date;
+  @OneToOne(() => Pessoa, { nullable: false, cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn({ name: 'id_pessoa' })
+  pessoa: Pessoa;
 }

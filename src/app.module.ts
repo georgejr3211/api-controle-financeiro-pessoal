@@ -8,6 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthGuard } from './common/guards/auth.guard';
 import { UsuarioModule } from './modules/usuario/usuario.module';
+import { PessoaModule } from './modules/pessoa/pessoa.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
       synchronize: Number(process.env.SYNCHRONIZE) ? true : false,
     }),
     UsuarioModule,
+    PessoaModule,
   ],
   controllers: [AppController],
   providers: [
