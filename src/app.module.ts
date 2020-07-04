@@ -9,6 +9,9 @@ import { AppService } from './app.service';
 import { AuthGuard } from './common/guards/auth.guard';
 import { UsuarioModule } from './modules/usuario/usuario.module';
 import { PessoaModule } from './modules/pessoa/pessoa.module';
+import { MovimentacaoModule } from './modules/movimentacao/movimentacao.module';
+import { CategoriaModule } from './modules/categoria/categoria.module';
+import { TipoMovimentacaoModule } from './modules/tipo-movimentacao/tipo-movimentacao.module';
 
 @Module({
   imports: [
@@ -26,6 +29,9 @@ import { PessoaModule } from './modules/pessoa/pessoa.module';
     }),
     UsuarioModule,
     PessoaModule,
+    MovimentacaoModule,
+    CategoriaModule,
+    TipoMovimentacaoModule,
   ],
   controllers: [AppController],
   providers: [

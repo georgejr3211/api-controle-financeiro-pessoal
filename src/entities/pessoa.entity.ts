@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { IsDefined, IsOptional } from 'class-validator';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+
 import { BaseColumn } from '../common/classes/base-columns';
+import { Usuario } from './usuario.entity';
 
 const { CREATE, UPDATE } = CrudValidationGroups;
 
@@ -31,6 +33,6 @@ export class Pessoa extends BaseColumn {
   @Column({ name: 'dt_nascimento', type: 'date', nullable: false })
   dtNascimento: Date;
 
-  @OneToOne(() => Pessoa, { nullable: false })
-  pessoa: Pessoa;
+  @OneToOne(() => Usuario, usuario => usuario.pessoa, { nullable: false })
+  usuario: Usuario;
 }

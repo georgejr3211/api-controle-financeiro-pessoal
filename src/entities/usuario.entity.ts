@@ -17,7 +17,6 @@ export class Usuario extends BaseColumn {
   @ApiProperty()
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
-  @IsEmail()
   @Column({ length: 145, nullable: false, unique: true })
   email: string;
 
@@ -36,6 +35,11 @@ export class Usuario extends BaseColumn {
   @IsOptional({ groups: [UPDATE] })
   @Column({ name: 'codigo_recuperacao', type: 'int', nullable: true })
   codigoRecuperacao: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @Column({ type: 'smallint', nullable: false, default: 0 })
+  status?: number;
 
   @IsOptional()
   @OneToOne(() => Pessoa, { nullable: false, cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
