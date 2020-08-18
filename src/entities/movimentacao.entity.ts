@@ -27,23 +27,19 @@ export class Movimentacao extends BaseColumn {
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
   @Column({ length: 150, nullable: false })
-  titulo: string;
+  descricao: string;
 
   @IsOptional()
   @Column({ nullable: true, name: 'dt_conclusao' })
   dtConclusao: Date;
 
   @IsOptional()
-  @Column({ type: 'date', nullable: false, name: 'dt_lancamento', default: moment(new Date()).subtract(3, 'hours').format('YYYY-MM-DD') })
+  @Column({ type: 'date', nullable: false, name: 'dt_lancamento', default: moment.tz(new Date(), process.env.TIMEZONE).format('YYYY-MM-DD') })
   dtLancamento: Date;
 
   @IsOptional()
   @Column({ type: 'smallint', nullable: false, default: 0 })
   pago: number;
-
-  @IsOptional()
-  @Column({ type: 'smallint', name: 'conta_fixa', nullable: false, default: 0 })
-  contaFixa: number;
 
   // RELATIONS
   @IsDefined({ groups: [CREATE] })

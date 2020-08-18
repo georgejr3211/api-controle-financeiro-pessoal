@@ -12,6 +12,7 @@ import { PessoaModule } from './modules/pessoa/pessoa.module';
 import { MovimentacaoModule } from './modules/movimentacao/movimentacao.module';
 import { CategoriaModule } from './modules/categoria/categoria.module';
 import { TipoMovimentacaoModule } from './modules/tipo-movimentacao/tipo-movimentacao.module';
+import { ParcelaModule } from './modules/parcela/parcela.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TipoMovimentacaoModule } from './modules/tipo-movimentacao/tipo-movimen
     MovimentacaoModule,
     CategoriaModule,
     TipoMovimentacaoModule,
+    ParcelaModule,
   ],
   controllers: [AppController],
   providers: [
