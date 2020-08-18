@@ -1,4 +1,5 @@
 export enum MENSAGENS {
+  SUCESSO = 'Operação realizada com sucesso!',
   REGISTRO_NAO_ENCONTRADO = 'Registro não encontrado',
   TOKEN_NAO_ENCONTRADO = 'Token não encontrado',
   SEM_PERMISSAO = 'Sem permissão',

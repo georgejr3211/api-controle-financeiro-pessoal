@@ -1,16 +1,13 @@
-export class ResultResponse {
+export class Result {
   total?: number;
-  status?: number;
   message?: string | object;
-
   error: boolean;
   data: any[];
 
-  constructor({ data, error, total, status, message }) {
+  constructor({ data, error, total, message }) {
     this.data = data;
     this.error = error;
     this.total = total;
-    this.status = status;
     this.message = message;
   }
 }

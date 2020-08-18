@@ -8,6 +8,7 @@ import { createToken } from '../../common/utils/jwt';
 import { compare, hash } from '../../common/utils/password';
 import { LoginDto } from '../../dtos/login.dto';
 import { Usuario } from '../../entities/usuario.entity';
+import { In } from 'typeorm';
 
 @Injectable()
 export class UsuarioService extends TypeOrmCrudService<Usuario> {
@@ -15,8 +16,17 @@ export class UsuarioService extends TypeOrmCrudService<Usuario> {
     super(repo);
   }
 
-  async findEmail(email: string) {
-    const usuario = await this.repo.findOne({ email });
+  async findEmail(email: string, status?: number[]) {
+    const parametros: any = {};
+    parametros.email = email;
+    if (status) {
+      parametros.status = In(status);
+    }
+
+    const usuario = await this.repo.createQueryBuilder('usuario')
+      .innerJoinAndSelect('usuario.pessoa', 'pessoa')
+      .where(parametros)
+      .getOne();
 
     return usuario;
   }
@@ -25,7 +35,7 @@ export class UsuarioService extends TypeOrmCrudService<Usuario> {
     const userEmail = await this.findEmail(data.email);
 
     if (userEmail) {
-      throw new HttpException(MENSAGENS.EMAIL_DUPLICADO, HttpStatus.NOT_FOUND);
+      throw new HttpException(MENSAGENS.EMAIL_DUPLICADO, HttpStatus.NO_CONTENT);
     }
 
     data.senha = hash(data.senha);
@@ -43,12 +53,11 @@ export class UsuarioService extends TypeOrmCrudService<Usuario> {
 
   async onLogin(data: LoginDto) {
     const { senha, email } = data;
-    let usuario: Usuario = null;
 
-    usuario = await this.findEmail(email);
+    const usuario: Usuario = await this.findEmail(email, [1]);
 
     if (!usuario) {
-      throw new HttpException(MENSAGENS.REGISTRO_NAO_ENCONTRADO, HttpStatus.NOT_FOUND);
+      throw new HttpException(MENSAGENS.REGISTRO_NAO_ENCONTRADO, HttpStatus.NO_CONTENT);
     }
 
     const token = createToken({ ...usuario });
@@ -56,7 +65,7 @@ export class UsuarioService extends TypeOrmCrudService<Usuario> {
     if (!usuario.emailVerificado) {
       const html = `<a href="${process.env.API_BASE_URL}/usuarios/confirmar-email?token=${token}">Confirmar cadastro</a>`;
       await sendEmail(usuario.email, 'Confirmação de cadastro', html, html);
-      throw new HttpException(MENSAGENS.EMAIL_NAO_CONFIRMADO, HttpStatus.NOT_FOUND);
+      throw new HttpException(MENSAGENS.EMAIL_NAO_CONFIRMADO, HttpStatus.NO_CONTENT);
     }
 
     const samePassword = compare(senha, usuario.senha);
@@ -72,7 +81,7 @@ export class UsuarioService extends TypeOrmCrudService<Usuario> {
     const usuario = await this.findEmail(email);
 
     if (!usuario) {
-      throw new HttpException(MENSAGENS.REGISTRO_NAO_ENCONTRADO, HttpStatus.NOT_FOUND);
+      throw new HttpException(MENSAGENS.REGISTRO_NAO_ENCONTRADO, HttpStatus.NO_CONTENT);
     }
 
     if (usuario.emailVerificado === 1) {
@@ -81,6 +90,7 @@ export class UsuarioService extends TypeOrmCrudService<Usuario> {
 
     usuario.status = 1;
     usuario.emailVerificado = 1;
+    usuario.pessoa.status = 1;
 
     await this.repo.save(usuario);
 
@@ -91,7 +101,7 @@ export class UsuarioService extends TypeOrmCrudService<Usuario> {
     const usuario = await this.findEmail(email);
 
     if (!usuario) {
-      throw new HttpException(MENSAGENS.REGISTRO_NAO_ENCONTRADO, HttpStatus.NOT_FOUND);
+      throw new HttpException(MENSAGENS.REGISTRO_NAO_ENCONTRADO, HttpStatus.NO_CONTENT);
     }
 
     usuario.codigoRecuperacao = Math.floor(Math.random() * (+9999 - +3333)) + +3333;
@@ -108,7 +118,7 @@ export class UsuarioService extends TypeOrmCrudService<Usuario> {
     const usuario = await this.findEmail(email);
 
     if (!usuario) {
-      throw new HttpException(MENSAGENS.REGISTRO_NAO_ENCONTRADO, HttpStatus.NOT_FOUND);
+      throw new HttpException(MENSAGENS.REGISTRO_NAO_ENCONTRADO, HttpStatus.NO_CONTENT);
     }
 
     if (usuario.codigoRecuperacao !== codigo) {

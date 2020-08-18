@@ -17,12 +17,12 @@ export class AuthGuard implements CanActivate {
     const isPublic = this.reflector.get<boolean>('isPublic', context.getHandler());
     const { authorization } = request.headers;
 
-    if (isPublic || authorization === 'local') {
+    if (isPublic || authorization === 'local' || Boolean(process.env.TOKEN)) {
       return true;
     }
 
     if (!authorization) {
-      throw new HttpException(MENSAGENS.TOKEN_NAO_ENCONTRADO, HttpStatus.NOT_FOUND);
+      throw new HttpException(MENSAGENS.TOKEN_NAO_ENCONTRADO, HttpStatus.NO_CONTENT);
     }
 
     const usuario = verifyToken(authorization);
