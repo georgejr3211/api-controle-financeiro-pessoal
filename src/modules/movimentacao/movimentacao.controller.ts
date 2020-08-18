@@ -1,5 +1,5 @@
 import { MENSAGENS } from './../../common/enums/mensagens';
-import { Controller, Get, Param, Query, Req, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, Res, HttpStatus, Post, Body } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { Response } from 'express';
 import * as moment from 'moment-timezone';
@@ -87,6 +87,5 @@ export class MovimentacaoController {
     const result = await this.service.getMovimentacoesPendentes(req.usuario.pessoa.id, dtPeriodo, tipoMovimentacao);
     return res.status(HttpStatus.OK).send(new Result({ data: result[0], error: null, total: result[1], message: MENSAGENS.SUCESSO }));
   }
-
 
 }

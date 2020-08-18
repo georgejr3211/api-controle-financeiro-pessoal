@@ -27,7 +27,7 @@ export class Movimentacao extends BaseColumn {
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
   @Column({ length: 150, nullable: false })
-  descricao: string;
+  titulo: string;
 
   @IsOptional()
   @Column({ nullable: true, name: 'dt_conclusao' })
@@ -40,6 +40,10 @@ export class Movimentacao extends BaseColumn {
   @IsOptional()
   @Column({ type: 'smallint', nullable: false, default: 0 })
   pago: number;
+
+  @IsOptional()
+  @Column({ type: 'smallint', name: 'conta_fixa', nullable: false, default: 0 })
+  contaFixa: number;
 
   // RELATIONS
   @IsDefined({ groups: [CREATE] })
