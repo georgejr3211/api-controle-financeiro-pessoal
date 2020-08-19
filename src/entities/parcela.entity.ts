@@ -39,7 +39,7 @@ export class Parcela extends BaseColumn {
   pago: number;
 
   // RELATIONS
-  @ApiProperty()
+  @ApiProperty({ type: () => Movimentacao })
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
   @ManyToOne(() => Movimentacao, { nullable: false })

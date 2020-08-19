@@ -2,12 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { IsDefined, IsOptional } from 'class-validator';
 import * as moment from 'moment-timezone';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 import { BaseColumn } from '../common/classes/base-columns';
 import { Categoria } from './categoria.entity';
 import { Pessoa } from './pessoa.entity';
 import { TipoMovimentacao } from './tipo-movimentacao.entity';
+import { Parcela } from './parcela.entity';
 
 const { CREATE, UPDATE } = CrudValidationGroups;
 @Entity('movimentacoes')
@@ -46,26 +47,31 @@ export class Movimentacao extends BaseColumn {
   pago: number;
 
   // RELATIONS
-  @ApiProperty()
+  @ApiProperty({ type: () => Categoria })
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
   @ManyToOne(() => Categoria, { nullable: false, cascade: true })
   @JoinColumn({ name: 'id_categoria' })
   categoria: Categoria;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => TipoMovimentacao })
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
   @ManyToOne(() => TipoMovimentacao, { nullable: false })
   @JoinColumn({ name: 'id_tipo_movimentacao' })
   tipoMovimentacao: TipoMovimentacao;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => Pessoa })
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
   @ManyToOne(() => Pessoa, { nullable: false })
   @JoinColumn({ name: 'id_pessoa' })
   pessoa: Pessoa;
+
+  @ApiProperty({ type: () => Parcela })
+  @IsOptional()
+  @OneToMany(() => Parcela, obj => obj.movimentacao, { cascade: true })
+  parcelas: Parcela[];
 
   constructor(data: Omit<Movimentacao, 'id'>, id?: number) {
     super();
