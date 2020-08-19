@@ -7,6 +7,7 @@ import { LoginDto } from '../../dtos/login.dto';
 import { ResetPasswordDto } from '../../dtos/reset-password.dto';
 import { Usuario } from '../../entities/usuario.entity';
 import { UsuarioService } from './usuario.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Crud({
   model: {
@@ -24,6 +25,7 @@ import { UsuarioService } from './usuario.service';
     sort: [{ field: 'id', order: 'DESC' }],
   },
 })
+@ApiTags('Usuário')
 @Controller('usuarios')
 export class UsuarioController {
   constructor(private readonly service: UsuarioService) { }

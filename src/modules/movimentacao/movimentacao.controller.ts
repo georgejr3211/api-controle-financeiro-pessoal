@@ -7,6 +7,7 @@ import * as moment from 'moment-timezone';
 import { Movimentacao } from '../../entities/movimentacao.entity';
 import { MovimentacaoService } from './movimentacao.service';
 import { Result } from 'src/common/interfaces/response';
+import { ApiTags } from '@nestjs/swagger';
 
 @Crud({
   model: {
@@ -24,6 +25,7 @@ import { Result } from 'src/common/interfaces/response';
     },
   },
 })
+@ApiTags('Movimentação')
 @Controller('movimentacoes')
 export class MovimentacaoController {
   dtPeriodo: string;

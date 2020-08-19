@@ -2,6 +2,7 @@ import { Categoria } from './../../entities/categoria.entity';
 import { Controller } from '@nestjs/common';
 import { CategoriaService } from './categoria.service';
 import { Crud } from '@nestjsx/crud';
+import { ApiTags } from '@nestjs/swagger';
 
 @Crud({
   model: {
@@ -13,6 +14,7 @@ import { Crud } from '@nestjsx/crud';
     sort: [{ field: 'id', order: 'DESC' }],
   },
 })
+@ApiTags('Categoria')
 @Controller('categorias')
 export class CategoriaController {
   constructor(private readonly service: CategoriaService) { }

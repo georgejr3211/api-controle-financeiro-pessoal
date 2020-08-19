@@ -3,6 +3,7 @@ import { Crud } from '@nestjsx/crud';
 
 import { TipoMovimentacao } from '../../entities/tipo-movimentacao.entity';
 import { TipoMovimentacaoService } from './tipo-movimentacao.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Crud({
   model: {
@@ -14,6 +15,7 @@ import { TipoMovimentacaoService } from './tipo-movimentacao.service';
     sort: [{ field: 'id', order: 'DESC' }],
   },
 })
+@ApiTags('Tipo de movimentação')
 @Controller('tipos-movimentacao')
 export class TipoMovimentacaoController {
   constructor(private readonly service: TipoMovimentacaoService) { }
