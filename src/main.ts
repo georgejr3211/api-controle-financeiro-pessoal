@@ -8,6 +8,7 @@ import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 import { HttpErrorFilter } from './common/filters/http-error.filter';
 import swaggerOptions from './config/swagger';
+import 'source-map-support/register';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

@@ -11,6 +11,7 @@ const { CREATE, UPDATE } = CrudValidationGroups;
 @Entity('parcelas')
 export class Parcela extends BaseColumn {
 
+  @ApiProperty()
   @IsOptional()
   @PrimaryGeneratedColumn({ name: 'id_parcela' })
   id: number;
@@ -27,18 +28,30 @@ export class Parcela extends BaseColumn {
   @Column({ type: 'date', nullable: false, name: 'dt_vencimento' })
   dtVencimento: Date;
 
+  @ApiProperty()
   @IsOptional()
   @Column({ type: 'date', name: 'dt_conclusao', nullable: true })
   dtConclusao: Date;
 
+  @ApiProperty()
   @IsOptional()
   @Column({ type: 'smallint', nullable: false, default: 0 })
   pago: number;
 
   // RELATIONS
+  @ApiProperty()
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
   @ManyToOne(() => Movimentacao, { nullable: false })
   @JoinColumn({ name: 'id_movimentacao' })
   movimentacao: Movimentacao;
+
+  constructor(data: Omit<Parcela, 'id'>, id?: number) {
+    super();
+    Object.assign(this, data);
+
+    if (id) {
+      Object.assign(this.id, id);
+    }
+  }
 }
