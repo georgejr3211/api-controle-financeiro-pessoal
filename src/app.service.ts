@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common';
 export class AppService {
   getInfo() {
     return {
-      apiName: 'trocaqui-api',
+      apiName: process.env.API_NAME,
       environment: process.env.NODE_ENV,
       now: new Date(),
-      version: '1.0.1',
+      version: process.env.API_VERSION,
     };
   }
 }

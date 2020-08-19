@@ -27,6 +27,9 @@ import { ParcelaModule } from './modules/parcela/parcela.module';
       port: Number(process.env.DB_PORT),
       autoLoadEntities: true,
       synchronize: Number(process.env.SYNCHRONIZE) ? true : false,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     }),
     UsuarioModule,
     PessoaModule,
