@@ -20,6 +20,7 @@ import { Result } from 'src/common/interfaces/response';
       categoria: { eager: true },
       tipoMovimentacao: { eager: true },
       pessoa: { eager: true },
+      parcelas: { allow: [] }
     },
   },
 })
