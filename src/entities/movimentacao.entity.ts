@@ -46,6 +46,16 @@ export class Movimentacao extends BaseColumn {
   @Column({ type: 'smallint', nullable: false, default: 0 })
   pago: number;
 
+  @ApiProperty()
+  @IsOptional()
+  @Column({ type: 'smallint', name: 'bl_lembrete', nullable: false, default: 0 })
+  lembreteEnviado: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @Column({ nullable: true, name: 'dt_lembrete', type: 'date' })
+  dtLembrete: Date;
+
   // RELATIONS
   @ApiProperty({ type: () => Categoria })
   @IsDefined({ groups: [CREATE] })

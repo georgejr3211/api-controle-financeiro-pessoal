@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import * as moment from 'moment-timezone';
 
 import { Movimentacao } from '../../entities/movimentacao.entity';
+import { MENSAGENS } from './../../common/enums/mensagens';
 
 @Injectable()
 export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
-  constructor(
-    @InjectRepository(Movimentacao) repo,
-  ) {
+  constructor(@InjectRepository(Movimentacao) repo) {
     super(repo);
   }
 
@@ -91,5 +91,46 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .getManyAndCount();
 
     return result;
+  }
+
+  async getCountContasAPagar() {
+    const dtHoje = moment.tz(new Date(), process.env.TIMEZONE).format('YYYY-MM-DD');
+    const result = await this.repo.createQueryBuilder('movimentacao')
+      .innerJoin('movimentacao.pessoa', 'pessoa')
+      .innerJoin('pessoa.usuario', 'usuario')
+      .innerJoin('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
+      .select(`COUNT(movimentacao.dtLembrete) AS qtdLembrete, pessoa.nome, pessoa.sobrenome, usuario.email`)
+      .where('movimentacao.dtLembrete = :dtHoje', { dtHoje })
+      .andWhere('movimentacao.lembreteEnviado = :lembreteEnviado', { lembreteEnviado: 0 })
+      .andWhere('LOWER(tipoMovimentacao.descricao) = :tipoMovimentacao', { tipoMovimentacao: 'despesa' })
+      .andWhere('movimentacao.pago = :pago', { pago: 0 })
+      .andWhere('usuario.status = :usuarioStatus', { usuarioStatus: 1 })
+      .groupBy('pessoa.id')
+      .addGroupBy('usuario.id')
+      .getRawMany();
+
+    return result;
+  }
+
+  async getContasAPagar() {
+    const dtHoje = moment.tz(new Date(), process.env.TIMEZONE).format('YYYY-MM-DD');
+    const result = await this.repo.createQueryBuilder('movimentacao')
+      .innerJoinAndSelect('movimentacao.pessoa', 'pessoa')
+      .innerJoinAndSelect('pessoa.usuario', 'usuario')
+      .innerJoinAndSelect('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
+      .where('movimentacao.dtLembrete = :dtHoje', { dtHoje })
+      .andWhere('movimentacao.lembreteEnviado = :lembreteEnviado', { lembreteEnviado: 0 })
+      .andWhere('LOWER(tipoMovimentacao.descricao) = :tipoMovimentacao', { tipoMovimentacao: 'despesa' })
+      .andWhere('movimentacao.pago = :pago', { pago: 0 })
+      .andWhere('usuario.status = :usuarioStatus', { usuarioStatus: 1 })
+      .getMany();
+
+    return result;
+  }
+
+  async updateMany(ids: number[], payload) {
+    await this.repo.update(ids, { ...payload });
+
+    return MENSAGENS.SUCESSO;
   }
 }

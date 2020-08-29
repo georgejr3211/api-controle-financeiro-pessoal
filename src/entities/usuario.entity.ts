@@ -42,7 +42,7 @@ export class Usuario extends BaseColumn {
   @Column({ type: 'smallint', nullable: false, default: 0 })
   status?: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => Pessoa })
   @IsOptional()
   @OneToOne(() => Pessoa, { nullable: false, cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'id_pessoa' })

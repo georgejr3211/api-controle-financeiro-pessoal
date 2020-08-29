@@ -7,12 +7,13 @@ import { EasyconfigModule } from 'nestjs-easyconfig';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthGuard } from './common/guards/auth.guard';
-import { UsuarioModule } from './modules/usuario/usuario.module';
-import { PessoaModule } from './modules/pessoa/pessoa.module';
-import { MovimentacaoModule } from './modules/movimentacao/movimentacao.module';
+import { CronModule } from './crons/cron.module';
 import { CategoriaModule } from './modules/categoria/categoria.module';
-import { TipoMovimentacaoModule } from './modules/tipo-movimentacao/tipo-movimentacao.module';
+import { MovimentacaoModule } from './modules/movimentacao/movimentacao.module';
 import { ParcelaModule } from './modules/parcela/parcela.module';
+import { PessoaModule } from './modules/pessoa/pessoa.module';
+import { TipoMovimentacaoModule } from './modules/tipo-movimentacao/tipo-movimentacao.module';
+import { UsuarioModule } from './modules/usuario/usuario.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ParcelaModule } from './modules/parcela/parcela.module';
     CategoriaModule,
     TipoMovimentacaoModule,
     ParcelaModule,
+    CronModule,
   ],
   controllers: [AppController],
   providers: [
