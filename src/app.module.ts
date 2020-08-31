@@ -46,7 +46,7 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
-    }
+    },
   ],
 })
 export class AppModule { }
