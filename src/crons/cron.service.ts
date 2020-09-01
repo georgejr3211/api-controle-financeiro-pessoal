@@ -28,7 +28,7 @@ export class CronService {
     });
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async handleContaFixa(): Promise<void> {
     let contasFixas = await this.movimentacaoService.getContasFixas();
     if (!contasFixas.length) {
