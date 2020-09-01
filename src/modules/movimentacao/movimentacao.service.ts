@@ -133,4 +133,27 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
 
     return MENSAGENS.SUCESSO;
   }
+
+  async getContasFixas() {
+    const dtHoje = moment.tz(new Date(), process.env.TIMEZONE).format('YYYY-MM-DD');
+
+    const result = await this.repo.createQueryBuilder('movimentacao')
+      .innerJoinAndSelect('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
+      .innerJoinAndSelect('movimentacao.categoria', 'categoria')
+      .innerJoinAndSelect('movimentacao.pessoa', 'pessoa')
+      .where('movimentacao.contaFixa = :contaFixa', { contaFixa: 1 })
+      .andWhere('movimentacao.dtLancamento <= :dtHoje', { dtHoje })
+      .andWhere('movimentacao.statusContaFixa = :statusContaFixa', { statusContaFixa: 0 })
+      .getMany();
+
+    return result;
+  }
+
+  async saveMany(data: Movimentacao[]) {
+    return await this.repo.save(data);
+  }
+
+  async save(data: Movimentacao) {
+    return await this.repo.save(data);
+  }
 }
