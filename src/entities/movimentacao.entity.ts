@@ -2,13 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { IsDefined, IsOptional } from 'class-validator';
 import * as moment from 'moment-timezone';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { BaseColumn } from '../common/classes/base-columns';
 import { Categoria } from './categoria.entity';
+import { Parcela } from './parcela.entity';
 import { Pessoa } from './pessoa.entity';
 import { TipoMovimentacao } from './tipo-movimentacao.entity';
-import { Parcela } from './parcela.entity';
 
 const { CREATE, UPDATE } = CrudValidationGroups;
 @Entity('movimentacoes')
@@ -48,6 +48,16 @@ export class Movimentacao extends BaseColumn {
 
   @ApiProperty()
   @IsOptional()
+  @Column({ type: 'smallint', name: 'conta_fixa', nullable: false, default: 0 })
+  contaFixa: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @Column({ type: 'smallint', name: 'bl_create_conta_fixa', nullable: false, default: 0 })
+  statusContaFixa: number;
+
+  @ApiProperty()
+  @IsOptional()
   @Column({ type: 'smallint', name: 'bl_lembrete', nullable: false, default: 0 })
   lembreteEnviado: number;
 
@@ -55,6 +65,11 @@ export class Movimentacao extends BaseColumn {
   @IsOptional()
   @Column({ nullable: true, name: 'dt_lembrete', type: 'date' })
   dtLembrete: Date;
+
+  @ApiProperty()
+  @IsOptional()
+  @Column({ nullable: true, name: 'dt_vencimento', type: 'date' })
+  dtVencimento: Date;
 
   // RELATIONS
   @ApiProperty({ type: () => Categoria })
