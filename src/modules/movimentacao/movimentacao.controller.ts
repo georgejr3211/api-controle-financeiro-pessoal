@@ -1,6 +1,16 @@
 import { MENSAGENS } from './../../common/enums/mensagens';
-import { Controller, Get, Param, Query, Req, Res, HttpStatus, Post, Body } from '@nestjs/common';
-import { Crud } from '@nestjsx/crud';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Req,
+  Res,
+  HttpStatus,
+  Post,
+  Body,
+} from '@nestjs/common';
+import { Crud, Override } from '@nestjsx/crud';
 import { Response } from 'express';
 import * as moment from 'moment-timezone';
 
@@ -8,6 +18,7 @@ import { Movimentacao } from '../../entities/movimentacao.entity';
 import { MovimentacaoService } from './movimentacao.service';
 import { Result } from 'src/common/interfaces/response';
 import { ApiTags } from '@nestjs/swagger';
+import { GetMovimentacoesDto } from './dto/get-movimentacoes.dto';
 
 @Crud({
   model: {
@@ -21,7 +32,7 @@ import { ApiTags } from '@nestjs/swagger';
       categoria: { eager: true },
       tipoMovimentacao: { eager: true },
       pessoa: { eager: true },
-      parcelas: { allow: [] }
+      parcelas: { allow: [] },
     },
   },
 })
@@ -30,7 +41,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class MovimentacaoController {
   dtPeriodo: string;
 
-  constructor(private readonly service: MovimentacaoService) { }
+  constructor(private readonly service: MovimentacaoService) {}
 
   @Get('saldo')
   async getSaldo(@Req() req, @Query('dtPeriodo') dtPeriodo: string) {
@@ -40,7 +51,10 @@ export class MovimentacaoController {
       dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
     }
 
-    const result = await this.service.getSaldo(req.usuario.pessoa.id, dtPeriodo);
+    const result = await this.service.getSaldo(
+      req.usuario.pessoa.id,
+      dtPeriodo,
+    );
     return result;
   }
 
@@ -56,7 +70,11 @@ export class MovimentacaoController {
     } else {
       dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
     }
-    const result = await this.service.getSaldoByTipoMovimentacao(req.usuario.pessoa.id, tipoMovimentacao, dtPeriodo);
+    const result = await this.service.getSaldoByTipoMovimentacao(
+      req.usuario.pessoa.id,
+      tipoMovimentacao,
+      dtPeriodo,
+    );
     return res.status(HttpStatus.OK).send(result);
   }
 
@@ -71,7 +89,10 @@ export class MovimentacaoController {
     } else {
       dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
     }
-    const result = await this.service.getDespesasGroupByCategoria(req.usuario.pessoa.id, dtPeriodo);
+    const result = await this.service.getDespesasGroupByCategoria(
+      req.usuario.pessoa.id,
+      dtPeriodo,
+    );
     return res.status(HttpStatus.OK).send({ data: result });
   }
 
@@ -87,8 +108,32 @@ export class MovimentacaoController {
     } else {
       dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
     }
-    const result = await this.service.getMovimentacoesPendentes(req.usuario.pessoa.id, dtPeriodo, tipoMovimentacao);
-    return res.status(HttpStatus.OK).send(new Result({ data: result[0], error: null, total: result[1], message: MENSAGENS.SUCESSO }));
+    const result = await this.service.getMovimentacoesPendentes(
+      req.usuario.pessoa.id,
+      dtPeriodo,
+      tipoMovimentacao,
+    );
+    return res.status(HttpStatus.OK).send(
+      new Result({
+        data: result[0],
+        error: null,
+        total: result[1],
+        message: MENSAGENS.SUCESSO,
+      }),
+    );
   }
 
+  @Get('movimentacoes')
+  async getMovimentacoes(
+    @Req() req,
+    @Res() res: Response,
+    @Query() query: GetMovimentacoesDto,
+  ) {
+    const [total, result] = await this.service.getMovimentacoes(
+      req.usuario.pessoa.id,
+      query,
+    );
+
+    return res.status(HttpStatus.OK).send({ total, data: result });
+  }
 }
