@@ -19,10 +19,8 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
     .innerJoinAndSelect('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
     .innerJoinAndSelect('movimentacao.pessoa', 'pessoa')
     .leftJoinAndSelect('movimentacao.parcelas', 'parcelas')
-    .where('pessoa.id = :pessoaId', { pessoaId })
-    .orderBy('movimentacao.id', 'DESC')
-    .limit(10)
-    .where('movimentacao.status = 1');
+    .where('pessoa.id = :pessoaId AND movimentacao.status = 1', { pessoaId })
+    .orderBy('movimentacao.id', 'DESC');
 
 
     // FILTROS

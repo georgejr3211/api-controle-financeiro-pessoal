@@ -10,7 +10,7 @@ import {
   Post,
   Body,
 } from '@nestjs/common';
-import { Crud, Override } from '@nestjsx/crud';
+import { Crud, CrudAuth, CrudController, CrudRequest, Override, ParsedRequest } from '@nestjsx/crud';
 import { Response } from 'express';
 import * as moment from 'moment-timezone';
 
@@ -38,10 +38,14 @@ import { GetMovimentacoesDto } from './dto/get-movimentacoes.dto';
 })
 @ApiTags('Movimentação')
 @Controller('movimentacoes')
-export class MovimentacaoController {
+export class MovimentacaoController implements CrudController<Movimentacao> {
   dtPeriodo: string;
 
-  constructor(private readonly service: MovimentacaoService) {}
+  constructor(public readonly service: MovimentacaoService) { }
+
+  get base(): CrudController<Movimentacao> {
+    return this;
+  }
 
   @Get('saldo')
   async getSaldo(@Req() req, @Query('dtPeriodo') dtPeriodo: string) {
@@ -123,17 +127,17 @@ export class MovimentacaoController {
     );
   }
 
-  @Get('movimentacoes')
-  async getMovimentacoes(
-    @Req() req,
-    @Res() res: Response,
+  @Override()
+  async getMany(
+    @ParsedRequest() req: CrudRequest,
     @Query() query: GetMovimentacoesDto,
+    @Req() reqExpress: any
   ) {
-    const [total, result] = await this.service.getMovimentacoes(
-      req.usuario.pessoa.id,
+    const [result, total] = await this.service.getMovimentacoes(
+      reqExpress.usuario.pessoa.id,
       query,
     );
 
-    return res.status(HttpStatus.OK).send({ total, data: result });
+    return { data: result, total };
   }
 }
