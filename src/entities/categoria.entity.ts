@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { IsDefined, IsEmail, IsOptional } from 'class-validator';
 import { BaseColumn } from '../common/classes/base-columns';
-import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
 import { Pessoa } from './pessoa.entity';
 
 const { CREATE, UPDATE } = CrudValidationGroups;
@@ -20,6 +20,13 @@ export class Categoria extends BaseColumn {
   @IsOptional({ groups: [UPDATE] })
   @Column({ length: 45, nullable: false, unique: true })
   descricao: string;
+
+  @ApiProperty()
+  @IsDefined({ groups: [CREATE] })
+  @IsOptional({ groups: [UPDATE] })
+  @ManyToOne(() => Pessoa, { nullable: false })
+  @JoinColumn({ name: 'id_pessoa' })
+  pessoa: Pessoa;
 
   constructor(data: Omit<Categoria, 'id'>, id?: number) {
     super();
