@@ -2,12 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { IsDefined, IsEmail, IsOptional } from 'class-validator';
 import { BaseColumn } from '../common/classes/base-columns';
-import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, Index, Unique } from 'typeorm';
 import { Pessoa } from './pessoa.entity';
 
 const { CREATE, UPDATE } = CrudValidationGroups;
 
 @Entity('categorias')
+@Unique('uk_descricao_pessoa', ['descricao', 'pessoa'])
 export class Categoria extends BaseColumn {
 
   @ApiProperty()
@@ -18,7 +19,7 @@ export class Categoria extends BaseColumn {
   @ApiProperty()
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
-  @Column({ length: 45, nullable: false, unique: true })
+  @Column({ length: 45, nullable: false })
   descricao: string;
 
   @ApiProperty()
