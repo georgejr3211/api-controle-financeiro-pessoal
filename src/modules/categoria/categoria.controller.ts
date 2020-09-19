@@ -12,6 +12,9 @@ import { ApiTags } from '@nestjs/swagger';
     alwaysPaginate: true,
     maxLimit: 10,
     sort: [{ field: 'id', order: 'DESC' }],
+    join: {
+      pessoa: { eager: true }
+    }
   },
 })
 @ApiTags('Categoria')
