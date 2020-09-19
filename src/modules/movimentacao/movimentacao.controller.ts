@@ -123,17 +123,4 @@ export class MovimentacaoController {
     );
   }
 
-  @Get('movimentacoes')
-  async getMovimentacoes(
-    @Req() req,
-    @Res() res: Response,
-    @Query() query: GetMovimentacoesDto,
-  ) {
-    const [total, result] = await this.service.getMovimentacoes(
-      req.usuario.pessoa.id,
-      query,
-    );
-
-    return res.status(HttpStatus.OK).send({ total, data: result });
-  }
 }
