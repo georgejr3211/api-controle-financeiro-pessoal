@@ -13,67 +13,6 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
     super(repo);
   }
 
-  async getMovimentacoes(pessoaId: number, query: GetMovimentacoesDto) {
-    const qb = this.repo.createQueryBuilder('movimentacao')
-    .innerJoinAndSelect('movimentacao.categoria', 'categoria')
-    .innerJoinAndSelect('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
-    .innerJoinAndSelect('movimentacao.pessoa', 'pessoa')
-    .leftJoinAndSelect('movimentacao.parcelas', 'parcelas')
-    .where('pessoa.id = :pessoaId', { pessoaId })
-    .orderBy('movimentacao.id', 'DESC')
-    .limit(10)
-    .where('movimentacao.status = 1');
-
-
-    // FILTROS
-
-    if (query.dtConclusao) {
-      qb.andWhere('movimentacao.dtConclusao = :dtConclusao', { dtConclusao: query.dtConclusao });
-    }
-
-    if (query.dtLancamento) {
-      qb.andWhere('movimentacao.dtLancamento = :dtLancamento', { dtLancamento: query.dtLancamento });
-    }
-
-    if (query.dtLembrete) {
-      qb.andWhere('movimentacao.dtLembrete = :dtLembrete', { dtLembrete: query.dtLembrete });
-    }
-
-    if (query.dtVencimento) {
-      qb.andWhere('movimentacao.dtVencimento = :dtVencimento', { dtVencimento: query.dtVencimento });
-    }
-
-    if (query.isContaAPagar) {
-      
-    }
-
-    if (query.isContaAReceber) {
-      
-    }
-
-    if (query.isContaFixa) {
-      qb.andWhere('movimentacao.contaFixa = :contaFixa', { contaFixa: query.isContaFixa });
-    }
-
-    if (query.lembreteEnviado) {
-      qb.andWhere('movimentacao.lembreteEnviado = :lembreteEnviado', { lembreteEnviado: query.lembreteEnviado });
-    }
-
-    if (query.isPago) {
-      qb.andWhere('movimentacao.pago = :pago', { pago: query.isPago });
-    }
-
-    if (query.tipoMovimentacao) {
-      qb.andWhere('movimentacao.tipoMovimentacao = :tipoMovimentacao', { tipoMovimentacao: query.tipoMovimentacao });
-    }
-
-    if (query.categorias) {
-      qb.andWhere('movimentacao.categoria = IN (:...categorias)', { categorias: query.categorias });
-    }
-
-    return await qb.getManyAndCount();
-  }
-
   async getSaldo(pessoaId: number, dtPeriodo: string) {
     const sql = `
     (
