@@ -66,11 +66,6 @@ export class Movimentacao extends BaseColumn {
   @Column({ nullable: true, name: 'dt_lembrete', type: 'date' })
   dtLembrete: Date;
 
-  @ApiProperty()
-  @IsOptional()
-  @Column({ nullable: true, name: 'dt_vencimento', type: 'date' })
-  dtVencimento: Date;
-
   // RELATIONS
   @ApiProperty({ type: () => Categoria })
   @IsDefined({ groups: [CREATE] })
