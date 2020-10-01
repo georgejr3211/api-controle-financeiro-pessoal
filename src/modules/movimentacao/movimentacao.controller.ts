@@ -10,7 +10,13 @@ import {
   Post,
   Body,
 } from '@nestjs/common';
-import { Crud, Override } from '@nestjsx/crud';
+import {
+  Crud,
+  CrudController,
+  CrudRequest,
+  Override,
+  ParsedRequest,
+} from '@nestjsx/crud';
 import { Response } from 'express';
 import * as moment from 'moment-timezone';
 
@@ -32,7 +38,6 @@ import { GetMovimentacoesDto } from './dto/get-movimentacoes.dto';
       categoria: { eager: true },
       tipoMovimentacao: { eager: true },
       pessoa: { eager: true },
-      parcelas: { allow: [] },
     },
   },
 })
@@ -41,7 +46,11 @@ import { GetMovimentacoesDto } from './dto/get-movimentacoes.dto';
 export class MovimentacaoController {
   dtPeriodo: string;
 
-  constructor(private readonly service: MovimentacaoService) {}
+  constructor(public readonly service: MovimentacaoService) {}
+
+  get base(): CrudController<Movimentacao> {
+    return this;
+  }
 
   @Get('saldo')
   async getSaldo(@Req() req, @Query('dtPeriodo') dtPeriodo: string) {
@@ -123,4 +132,53 @@ export class MovimentacaoController {
     );
   }
 
+  @Override()
+  async getMany(@ParsedRequest() req: CrudRequest) {
+    const result: any = await this.base.getManyBase(req);
+
+    result.data = this.setSituacao(result.data);
+
+    return result;
+  }
+
+  setSituacao(result: Movimentacao[]) {
+    return result.map(res => {
+      let situacao = '';
+      const dtHoje = moment
+        .tz(new Date(), process.env.TIMEZONE)
+        .format('YYYY-MM-DD');
+
+      if (!res.dtConclusao) {
+        situacao = 'Pendente';
+      }
+
+      if (
+        res.dtLancamento.toString() <= dtHoje &&
+        res.tipoMovimentacao.id === 1 &&
+        !res.dtConclusao
+      ) {
+        // Receita
+        situacao = 'À receber';
+      }
+
+      if (
+        res.dtLancamento.toString() <= dtHoje &&
+        res.tipoMovimentacao.id === 2 &&
+        !res.dtConclusao
+      ) {
+        // Despesa
+        situacao = 'À vencer';
+      }
+
+      if (dtHoje >= res.dtLancamento.toString() && !res.dtConclusao) {
+        situacao = 'Atrasada';
+      }
+
+      if (res.dtConclusao) {
+        situacao = 'Concluída';
+      }
+
+      return { ...res, situacao };
+    });
+  }
 }

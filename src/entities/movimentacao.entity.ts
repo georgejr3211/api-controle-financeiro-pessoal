@@ -6,7 +6,6 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGene
 
 import { BaseColumn } from '../common/classes/base-columns';
 import { Categoria } from './categoria.entity';
-import { Parcela } from './parcela.entity';
 import { Pessoa } from './pessoa.entity';
 import { TipoMovimentacao } from './tipo-movimentacao.entity';
 
@@ -87,11 +86,6 @@ export class Movimentacao extends BaseColumn {
   @ManyToOne(() => Pessoa, { nullable: false })
   @JoinColumn({ name: 'id_pessoa' })
   pessoa: Pessoa;
-
-  @ApiProperty({ type: () => Parcela })
-  @IsOptional()
-  @OneToMany(() => Parcela, obj => obj.movimentacao, { cascade: true })
-  parcelas: Parcela[];
 
   constructor(data: Omit<Movimentacao, 'id'>, id?: number) {
     super();

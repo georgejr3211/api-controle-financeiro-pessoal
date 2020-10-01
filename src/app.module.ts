@@ -10,7 +10,6 @@ import { AuthGuard } from './common/guards/auth.guard';
 import { CronModule } from './crons/cron.module';
 import { CategoriaModule } from './modules/categoria/categoria.module';
 import { MovimentacaoModule } from './modules/movimentacao/movimentacao.module';
-import { ParcelaModule } from './modules/parcela/parcela.module';
 import { PessoaModule } from './modules/pessoa/pessoa.module';
 import { TipoMovimentacaoModule } from './modules/tipo-movimentacao/tipo-movimentacao.module';
 import { UsuarioModule } from './modules/usuario/usuario.module';
@@ -37,7 +36,6 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
     MovimentacaoModule,
     CategoriaModule,
     TipoMovimentacaoModule,
-    ParcelaModule,
     CronModule,
   ],
   controllers: [AppController],
