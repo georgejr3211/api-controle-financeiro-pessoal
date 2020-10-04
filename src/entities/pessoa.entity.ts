@@ -31,6 +31,12 @@ export class Pessoa extends BaseColumn {
   @ApiProperty()
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
+  @Column({ length: 12, nullable: false })
+  celular: string;
+
+  @ApiProperty()
+  @IsDefined({ groups: [CREATE] })
+  @IsOptional({ groups: [UPDATE] })
   @Column({ name: 'dt_nascimento', type: 'date', nullable: false })
   dtNascimento: Date;
 

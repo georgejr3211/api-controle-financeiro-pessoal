@@ -37,22 +37,22 @@ export class Movimentacao extends BaseColumn {
 
   @ApiProperty()
   @IsOptional()
-  @Column({ type: 'date', nullable: false, name: 'dt_lancamento', default: moment.tz(new Date(), process.env.TIMEZONE).format('YYYY-MM-DD') })
-  dtLancamento: Date;
+  @Column({ type: 'date', nullable: false, name: 'dt_conta', default: moment.tz(new Date(), process.env.TIMEZONE).format('YYYY-MM-DD') })
+  dtConta: Date;
 
   @ApiProperty()
   @IsOptional()
   @Column({ type: 'smallint', nullable: false, default: 0 })
-  pago: number;
+  concluido: number;
 
   @ApiProperty()
   @IsOptional()
-  @Column({ type: 'smallint', name: 'conta_fixa', nullable: false, default: 0 })
+  @Column({ type: 'smallint', name: 'conta_fixa', nullable: false, default: 0, comment: 'Coluna que define se a conta é uma conta fixa' })
   contaFixa: number;
 
   @ApiProperty()
   @IsOptional()
-  @Column({ type: 'smallint', name: 'bl_create_conta_fixa', nullable: false, default: 0 })
+  @Column({ type: 'smallint', name: 'bl_create_conta_fixa', nullable: false, default: 0, comment: 'Coluna auxiliar para definir que o registro foi cadastrado a partir de uma conta fixa' })
   statusContaFixa: number;
 
   @ApiProperty()

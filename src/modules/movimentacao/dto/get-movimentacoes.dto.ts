@@ -1,7 +1,7 @@
 import { Categoria } from '../../../entities/categoria.entity';
 import { TipoMovimentacao } from '../../../entities/tipo-movimentacao.entity';
 export class GetMovimentacoesDto {
-    dtLancamento: Date;
+    dtConta: Date;
     dtVencimento: Date;
     dtConclusao: Date;
     dtLembrete: Date;
@@ -9,7 +9,7 @@ export class GetMovimentacoesDto {
     categorias: Categoria[];
     tipoMovimentacao: TipoMovimentacao;
     
-    isPago: number;
+    isconcluido: number;
     isContaFixa: number;
     lembreteEnviado: number;
     isContaAPagar: number;

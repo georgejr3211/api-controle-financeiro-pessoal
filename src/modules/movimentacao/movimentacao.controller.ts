@@ -46,7 +46,7 @@ import { GetMovimentacoesDto } from './dto/get-movimentacoes.dto';
 export class MovimentacaoController {
   dtPeriodo: string;
 
-  constructor(public readonly service: MovimentacaoService) {}
+  constructor(public readonly service: MovimentacaoService) { }
 
   get base(): CrudController<Movimentacao> {
     return this;
@@ -143,7 +143,9 @@ export class MovimentacaoController {
 
   setSituacao(result: Movimentacao[]) {
     return result.map(res => {
+
       let situacao = '';
+
       const dtHoje = moment
         .tz(new Date(), process.env.TIMEZONE)
         .format('YYYY-MM-DD');
@@ -152,25 +154,17 @@ export class MovimentacaoController {
         situacao = 'Pendente';
       }
 
-      if (
-        res.dtLancamento.toString() <= dtHoje &&
-        res.tipoMovimentacao.id === 1 &&
-        !res.dtConclusao
-      ) {
-        // Receita
+      // Receita
+      if (res.dtConta.toString() <= dtHoje && res.tipoMovimentacao.id === 1 && !res.dtConclusao) {
         situacao = 'À receber';
       }
 
-      if (
-        res.dtLancamento.toString() <= dtHoje &&
-        res.tipoMovimentacao.id === 2 &&
-        !res.dtConclusao
-      ) {
-        // Despesa
+      // Despesa
+      if (res.dtConta.toString() <= dtHoje && res.tipoMovimentacao.id === 2 && !res.dtConclusao) {
         situacao = 'À vencer';
       }
 
-      if (dtHoje >= res.dtLancamento.toString() && !res.dtConclusao) {
+      if (dtHoje >= res.dtConta.toString() && !res.dtConclusao) {
         situacao = 'Atrasada';
       }
 
