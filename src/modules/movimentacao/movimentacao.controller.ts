@@ -155,16 +155,16 @@ export class MovimentacaoController {
       }
 
       // Receita
-      if (res.dtConta.toString() <= dtHoje && res.tipoMovimentacao.id === 1 && !res.dtConclusao) {
+      if (res.dtConta.toString() >= dtHoje  && res.tipoMovimentacao.id === 1 && !res.dtConclusao) {
         situacao = 'À receber';
       }
 
       // Despesa
-      if (res.dtConta.toString() <= dtHoje && res.tipoMovimentacao.id === 2 && !res.dtConclusao) {
+      if (res.dtConta.toString() >= dtHoje  && res.tipoMovimentacao.id === 2 && !res.dtConclusao) {
         situacao = 'À vencer';
       }
 
-      if (dtHoje >= res.dtConta.toString() && !res.dtConclusao) {
+      if (dtHoje > res.dtConta.toString() && !res.dtConclusao) {
         situacao = 'Atrasada';
       }
 

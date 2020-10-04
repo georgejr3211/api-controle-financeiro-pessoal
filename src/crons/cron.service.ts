@@ -99,20 +99,4 @@ export class CronService {
     await this.movimentacaoService.saveMany(lancamentosFuturos);
   }
 
-  // i = 0;
-  // @Cron(CronExpression.EVERY_SECOND)
-  // async handleLembreteContasAVencer() {
-  //   if (process.env.CRON_SWITCH === 'OFF') {
-  //     return;
-  //   }
-
-  //   if (this.i === 1) {
-  //     return;
-  //   }
-
-  //   this.i = 1;
-
-  //   // this.messageService.sendBulkSMSMessage(['5534999771973'], 'Oi estou testando');
-  //   // this.messageService.sendWhatsAppMessage(['553499771973'], 'Oi estou testando');
-  // }
 }
