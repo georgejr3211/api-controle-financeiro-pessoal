@@ -64,6 +64,23 @@ export class MovimentacaoController {
       req.usuario.pessoa.id,
       dtPeriodo,
     );
+
+    return result;
+  }
+
+  @Get('saldo/lancamento-futuro')
+  async getSaldoFuturo(@Req() req, @Query('dtPeriodo') dtPeriodo: string) {
+    if (!dtPeriodo) {
+      dtPeriodo = moment.utc().format('YYYY-MM');
+    } else {
+      dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+    }
+
+    const result = await this.service.getSaldoFuturo(
+      req.usuario.pessoa.id,
+      dtPeriodo,
+    );
+
     return result;
   }
 
@@ -87,20 +104,62 @@ export class MovimentacaoController {
     return res.status(HttpStatus.OK).send(result);
   }
 
+  @Get('tipo-movimentacao/:tipoMovimentacao/nao-concluidas')
+  async getCountContasByTipoMovimentacaoAndNaoConcluida(
+    @Req() req,
+    @Param('tipoMovimentacao') tipoMovimentacao: number,
+    @Res() res: Response,
+  ) {
+
+    const result = await this.service.getCountContasByTipoMovimentacaoAndNaoConcluida(
+      req.usuario.pessoa.id,
+      tipoMovimentacao,
+    );
+    return res.status(HttpStatus.OK).send(result);
+  }
+
+  @Get('atrasadas')
+  async getCountContasAtrasadas(
+    @Req() req,
+    @Res() res: Response,
+  ) {
+
+    const result = await this.service.getCountContasAtrasadas(req.usuario.pessoa.id);
+    return res.status(HttpStatus.OK).send(result);
+  }
+
+
+
   @Get('despesas-categoria')
   async getDespesasGroupByCategoria(
     @Req() req,
-    @Query('dtPeriodo') dtPeriodo: string,
+    @Query('dtPeriodo') dtPeriodo: string | string[],
     @Res() res: Response,
   ) {
     if (!dtPeriodo) {
       dtPeriodo = moment.utc().format('YYYY-MM');
     } else {
-      dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+      if (Array.isArray(dtPeriodo)) {
+        dtPeriodo = dtPeriodo.map(dt => moment.utc(dt).format('YYYY-MM'));
+      } else {
+        dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+      }
     }
     const result = await this.service.getDespesasGroupByCategoria(
       req.usuario.pessoa.id,
       dtPeriodo,
+    );
+    return res.status(HttpStatus.OK).send({ data: result });
+  }
+
+  @Get('movimentacoes-tipo-movimentacao')
+  async getMovimentacoesGroupByTipoMovimentacao(
+    @Req() req,
+    @Res() res: Response,
+  ) {
+
+    const result = await this.service.getMovimentacoesGroupByTipoMovimentacao(
+      req.usuario.pessoa.id,
     );
     return res.status(HttpStatus.OK).send({ data: result });
   }
@@ -141,7 +200,7 @@ export class MovimentacaoController {
     return result;
   }
 
-  setSituacao(result: Movimentacao[]) {
+  private setSituacao(result: Movimentacao[]) {
     return result.map(res => {
 
       let situacao = '';
@@ -155,12 +214,12 @@ export class MovimentacaoController {
       }
 
       // Receita
-      if (res.dtConta.toString() >= dtHoje  && res.tipoMovimentacao.id === 1 && !res.dtConclusao) {
+      if (res.dtConta.toString() >= dtHoje && res.tipoMovimentacao.id === 1 && !res.dtConclusao) {
         situacao = 'À receber';
       }
 
       // Despesa
-      if (res.dtConta.toString() >= dtHoje  && res.tipoMovimentacao.id === 2 && !res.dtConclusao) {
+      if (res.dtConta.toString() >= dtHoje && res.tipoMovimentacao.id === 2 && !res.dtConclusao) {
         situacao = 'À vencer';
       }
 

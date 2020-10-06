@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import * as moment from 'moment-timezone';
+import { groupBy } from 'src/common/utils/array';
 
 import { Movimentacao } from '../../entities/movimentacao.entity';
 import { MENSAGENS } from './../../common/enums/mensagens';
@@ -14,6 +15,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
   }
 
   async getSaldo(pessoaId: number, dtPeriodo: string) {
+    // AND TO_CHAR(dt_conta, 'YYYY-MM') LIKE '${dtPeriodo}'
     const sql = `
     (
       SELECT SUM(total) AS total
@@ -21,7 +23,6 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       WHERE id_pessoa = ${pessoaId}
       AND concluido = 1
       AND id_tipo_movimentacao = 1
-      AND TO_CHAR(dt_conta, 'YYYY-MM') LIKE '${dtPeriodo}'
     ) -
     (
       SELECT SUM(total) AS total
@@ -29,7 +30,6 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       WHERE id_pessoa = ${pessoaId}
       AND concluido = 1
       AND id_tipo_movimentacao = 2
-      AND TO_CHAR(dt_conta, 'YYYY-MM') LIKE '${dtPeriodo}'
     )
   AS total`;
 
@@ -38,7 +38,32 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .select(sql)
       .getRawOne();
 
-    return result;
+    return 'total' in result && result.total ? result : { total: '0.00' };
+  }
+
+  async getSaldoFuturo(pessoaId: number, dtPeriodo: string) {
+    // AND TO_CHAR(dt_conta, 'YYYY-MM') LIKE '${dtPeriodo}'
+    const sql = `
+    (
+      SELECT SUM(total) AS total
+      FROM movimentacoes m2
+      WHERE id_pessoa = ${pessoaId}
+      AND id_tipo_movimentacao = 1
+    ) -
+    (
+      SELECT SUM(total) AS total
+      FROM movimentacoes m2
+      WHERE id_pessoa = ${pessoaId}
+      AND id_tipo_movimentacao = 2
+    )
+  AS total`;
+
+    const result = await this.repo
+      .createQueryBuilder()
+      .select(sql)
+      .getRawOne();
+
+    return 'total' in result && result.total ? result : { total: '0.00' };
   }
 
   async getSaldoByTipoMovimentacao(
@@ -51,10 +76,10 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .innerJoin('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
       .innerJoin('movimentacao.pessoa', 'pessoa')
       .where('movimentacao.concluido = 1')
-      .andWhere(
-        `TO_CHAR(movimentacao.dtConta, 'YYYY-MM') LIKE :dtPeriodo`,
-        { dtPeriodo },
-      )
+      // .andWhere(
+      //   `TO_CHAR(movimentacao.dtConta, 'YYYY-MM') LIKE :dtPeriodo`,
+      //   { dtPeriodo },
+      // )
       .andWhere(`tipoMovimentacao.id = :idTipoMovimentacao`, {
         idTipoMovimentacao: Number(idTipoMovimentacao),
       })
@@ -70,25 +95,104 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
     return result;
   }
 
-  async getDespesasGroupByCategoria(pessoaId: number, dtPeriodo: string) {
+  async getCountContasByTipoMovimentacaoAndNaoConcluida(
+    pessoaId: number,
+    idTipoMovimentacao: number,
+  ) {
     const result = await this.repo
       .createQueryBuilder('movimentacao')
+      .innerJoin('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
+      .innerJoin('movimentacao.pessoa', 'pessoa')
+      .where('movimentacao.concluido = 0')
+      .andWhere(`tipoMovimentacao.id = :idTipoMovimentacao`, {
+        idTipoMovimentacao: Number(idTipoMovimentacao),
+      })
+      .andWhere('pessoa.id = :pessoaId', { pessoaId })
+      .select('COUNT(movimentacao.id) as total')
+      .groupBy('tipoMovimentacao.id')
+      .getRawOne();
+
+    if (!result) {
+      return { total: '0' };
+    }
+
+    return result;
+  }
+
+  async getCountContasAtrasadas(
+    pessoaId: number,
+  ) {
+    const dtHoje = moment
+      .tz(new Date(), process.env.TIMEZONE)
+      .format('YYYY-MM-DD');
+
+    const result = await this.repo
+      .createQueryBuilder('movimentacao')
+      .innerJoin('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
+      .innerJoin('movimentacao.pessoa', 'pessoa')
+      .where('movimentacao.concluido = 0')
+      .andWhere('pessoa.id = :pessoaId', { pessoaId })
+      .andWhere(`:dtHoje > TO_CHAR(movimentacao.dtConta, 'YYYY-MM-DD')`, { dtHoje })
+      .select('COUNT(movimentacao.id) as total')
+      .groupBy('tipoMovimentacao.id')
+      .getRawOne();
+
+    if (!result) {
+      return { total: '0' };
+    }
+
+    return result;
+  }
+
+  async getDespesasGroupByCategoria(pessoaId: number, dtPeriodo: string | string[]) {
+    const qb = this.repo
+      .createQueryBuilder('movimentacao')
       .select([
-        'categoria.descricao as descricao',
-        'SUM(movimentacao.total) as total',
+        'categoria.descricao as name',
+        'SUM(movimentacao.total) as value',
       ])
       .innerJoin('movimentacao.categoria', 'categoria')
       .innerJoin('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
       .innerJoin('movimentacao.pessoa', 'pessoa')
       .where('tipoMovimentacao.id = 2')
       .andWhere('pessoa.id = :pessoaId', { pessoaId })
-      .andWhere(
+      .groupBy('categoria.id')
+      .orderBy('value', 'DESC');
+
+    if (Array.isArray(dtPeriodo)) {
+      qb.andWhere(`TO_CHAR(movimentacao.dtConta, 'YYYY-MM') BETWEEN :dtPeriodoIni AND :dtPeriodoFin`, { dtPeriodoIni: dtPeriodo[0], dtPeriodoFin: dtPeriodo[1] });
+    } else {
+      qb.andWhere(
         `TO_CHAR(movimentacao.dtConta, 'YYYY-MM') LIKE :dtPeriodo`,
         { dtPeriodo },
       )
-      .groupBy('categoria.id')
-      .orderBy('total', 'DESC')
-      .getRawMany();
+    }
+
+    const result = await qb.getRawMany();
+
+    return result;
+  }
+
+  async getMovimentacoesGroupByTipoMovimentacao(pessoaId: number) {
+    const qb = this.repo
+      .createQueryBuilder('movimentacao')
+      .select([
+        'tipoMovimentacao.id as id',
+        'tipoMovimentacao.descricao as descricao',
+        `TO_CHAR(movimentacao.dtConta, 'YYYY-MM-DD') as name`,
+        'SUM(movimentacao.total) as value',
+      ])
+      .innerJoin('movimentacao.categoria', 'categoria')
+      .innerJoin('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
+      .innerJoin('movimentacao.pessoa', 'pessoa')
+      .andWhere('pessoa.id = :pessoaId', { pessoaId })
+      .groupBy('movimentacao.dtConta')
+      .addGroupBy('tipoMovimentacao.id')
+      .orderBy('value', 'DESC');
+
+    let result = await qb.getRawMany();
+
+    result = groupBy(result, 'descricao', true);
 
     return result;
   }
