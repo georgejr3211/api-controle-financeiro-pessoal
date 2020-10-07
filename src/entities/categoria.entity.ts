@@ -25,6 +25,12 @@ export class Categoria extends BaseColumn {
   @ApiProperty()
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, })
+  limite: number;
+
+  @ApiProperty()
+  @IsDefined({ groups: [CREATE] })
+  @IsOptional({ groups: [UPDATE] })
   @ManyToOne(() => Pessoa, { nullable: false })
   @JoinColumn({ name: 'id_pessoa' })
   pessoa: Pessoa;
