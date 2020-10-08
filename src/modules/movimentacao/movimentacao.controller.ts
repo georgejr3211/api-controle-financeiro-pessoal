@@ -44,8 +44,6 @@ import { GetMovimentacoesDto } from './dto/get-movimentacoes.dto';
 @ApiTags('Movimentação')
 @Controller('movimentacoes')
 export class MovimentacaoController {
-  dtPeriodo: string;
-
   constructor(public readonly service: MovimentacaoService) { }
 
   get base(): CrudController<Movimentacao> {
@@ -127,8 +125,6 @@ export class MovimentacaoController {
     const result = await this.service.getCountContasAtrasadas(req.usuario.pessoa.id);
     return res.status(HttpStatus.OK).send(result);
   }
-
-
 
   @Get('despesas-categoria')
   async getDespesasGroupByCategoria(

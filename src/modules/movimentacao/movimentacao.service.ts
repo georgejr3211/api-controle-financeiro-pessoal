@@ -157,6 +157,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .innerJoin('movimentacao.pessoa', 'pessoa')
       .where('tipoMovimentacao.id = 2')
       .andWhere('pessoa.id = :pessoaId', { pessoaId })
+      .andWhere('categoria.status = 1')
       .groupBy('categoria.id')
       .orderBy('value', 'DESC');
 
