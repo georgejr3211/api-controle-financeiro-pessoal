@@ -150,6 +150,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .select([
         'categoria.descricao as name',
         'SUM(movimentacao.total) as value',
+        'categoria.limite as limite'
       ])
       .innerJoin('movimentacao.categoria', 'categoria')
       .innerJoin('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
