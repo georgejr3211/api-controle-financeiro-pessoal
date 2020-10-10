@@ -23,8 +23,7 @@ export class Categoria extends BaseColumn {
   descricao: string;
 
   @ApiProperty()
-  @IsDefined({ groups: [CREATE] })
-  @IsOptional({ groups: [UPDATE] })
+  @IsOptional()
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, })
   limite: number;
 
