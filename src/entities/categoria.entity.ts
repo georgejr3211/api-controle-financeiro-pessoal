@@ -4,6 +4,7 @@ import { IsDefined, IsEmail, IsOptional } from 'class-validator';
 import { BaseColumn } from '../common/classes/base-columns';
 import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, Index, Unique } from 'typeorm';
 import { Pessoa } from './pessoa.entity';
+import { Planejamento } from './planejamento.entity';
 
 const { CREATE, UPDATE } = CrudValidationGroups;
 
@@ -33,6 +34,12 @@ export class Categoria extends BaseColumn {
   @ManyToOne(() => Pessoa, { nullable: false })
   @JoinColumn({ name: 'id_pessoa' })
   pessoa: Pessoa;
+
+  @ApiProperty()
+  @IsOptional()
+  @ManyToOne(() => Planejamento, { nullable: true })
+  @JoinColumn({ name: 'id_planejamento' })
+  planejamento: Planejamento;
 
   constructor(data: Omit<Categoria, 'id'>, id?: number) {
     super();
