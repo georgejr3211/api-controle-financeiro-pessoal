@@ -84,6 +84,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
         idTipoMovimentacao: Number(idTipoMovimentacao),
       })
       .andWhere('pessoa.id = :pessoaId', { pessoaId })
+      .andWhere('movimentacao.status = 1')
       .select('SUM(movimentacao.total) as total')
       .groupBy('tipoMovimentacao.id')
       .getRawOne();
@@ -108,6 +109,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
         idTipoMovimentacao: Number(idTipoMovimentacao),
       })
       .andWhere('pessoa.id = :pessoaId', { pessoaId })
+      .andWhere('movimentacao.status = 1')
       .select('COUNT(movimentacao.id) as total')
       .groupBy('tipoMovimentacao.id')
       .getRawOne();
@@ -133,6 +135,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .where('movimentacao.concluido = 0')
       .andWhere('pessoa.id = :pessoaId', { pessoaId })
       .andWhere(`:dtHoje > TO_CHAR(movimentacao.dtConta, 'YYYY-MM-DD')`, { dtHoje })
+      .andWhere('movimentacao.status = 1')
       .select('COUNT(movimentacao.id) as total')
       .groupBy('tipoMovimentacao.id')
       .getRawOne();
@@ -158,6 +161,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .where('tipoMovimentacao.id = 2')
       .andWhere('pessoa.id = :pessoaId', { pessoaId })
       .andWhere('categoria.status = 1')
+      .andWhere('movimentacao.status = 1')
       .groupBy('categoria.id')
       .orderBy('value', 'DESC');
 
@@ -188,6 +192,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .innerJoin('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
       .innerJoin('movimentacao.pessoa', 'pessoa')
       .andWhere('pessoa.id = :pessoaId', { pessoaId })
+      .andWhere('movimentacao.status = 1')
       .groupBy('movimentacao.dtConta')
       .addGroupBy('tipoMovimentacao.id')
       .orderBy('value', 'DESC');
@@ -218,6 +223,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
         { dtPeriodo },
       )
       .andWhere('pessoa.id = :pessoaId', { pessoaId })
+      .andWhere('movimentacao.status = 1')
       .orderBy('movimentacao.dtConta', 'ASC')
       .limit(5)
       .getManyAndCount();
@@ -254,6 +260,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       })
       .andWhere('usuario.status = :usuarioStatus', { usuarioStatus: 1 })
       .andWhere('movimentacao.concluido = :concluido', { concluido: 0 })
+      .andWhere('movimentacao.status = 1')
       .groupBy('pessoa.id')
       .addGroupBy('usuario.id')
       .getRawMany();
@@ -280,6 +287,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .andWhere('movimentacao.lembreteEnviado = :lembreteEnviado', {
         lembreteEnviado: 0,
       })
+      .andWhere('movimentacao.status = 1')
       .andWhere('usuario.status = :usuarioStatus', { usuarioStatus: 1 })
       .getMany();
 
@@ -307,6 +315,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .andWhere('movimentacao.statusContaFixa = :statusContaFixa', {
         statusContaFixa: 0,
       })
+      .andWhere('movimentacao.status = 1')
       .getMany();
 
     return result;
