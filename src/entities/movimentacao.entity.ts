@@ -91,7 +91,7 @@ export class Movimentacao extends BaseColumn {
   @ApiProperty({ type: () => Conta })
   @IsDefined({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
-  @ManyToOne(() => Conta, { nullable: true })
+  @ManyToOne(() => Conta, { nullable: false })
   @JoinColumn({ name: 'id_conta' })
   conta: Conta;
 

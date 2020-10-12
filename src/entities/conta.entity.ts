@@ -5,6 +5,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 't
 
 import { BaseColumn } from '../common/classes/base-columns';
 import { InstituicaoFinanceira } from './instituicao-financeira.entity';
+import { Pessoa } from './pessoa.entity';
 import { TipoConta } from './tipo-conta.entity';
 
 const { CREATE, UPDATE } = CrudValidationGroups;
@@ -23,6 +24,13 @@ export class Conta extends BaseColumn {
     @Column({ nullable: false, length: 100 })
     descricao: string;
 
+    @ApiProperty({ type: () => Pessoa })
+    @IsDefined({ groups: [CREATE] })
+    @IsOptional({ groups: [UPDATE] })
+    @ManyToOne(() => Pessoa, { nullable: false })
+    @JoinColumn({ name: 'id_pessoa' })
+    pessoa: Pessoa;
+
     @ApiProperty({ type: () => InstituicaoFinanceira })
     @IsDefined({ groups: [CREATE] })
     @IsOptional({ groups: [UPDATE] })
@@ -40,7 +48,7 @@ export class Conta extends BaseColumn {
     @ApiProperty()
     @IsDefined({ groups: [CREATE] })
     @IsOptional({ groups: [UPDATE] })
-    @Column({ nullable: false, default: 0, name: 'incluir_soma' })
+    @Column({ nullable: false, default: 1, name: 'incluir_soma' })
     incluirSoma: string;
 
     constructor(data: Omit<Conta, 'id'>, id?: number) {

@@ -38,6 +38,7 @@ import { GetMovimentacoesDto } from './dto/get-movimentacoes.dto';
       categoria: { eager: true },
       tipoMovimentacao: { eager: true },
       pessoa: { eager: true },
+      conta: { eager: true },
     },
   },
 })

@@ -14,7 +14,8 @@ import { ApiTags } from '@nestjs/swagger';
     sort: [{ field: 'id', order: 'DESC' }],
     join: {
       pessoa: { eager: true },
-      categorias: { eager: true },
+      tipoConta: { eager: true },
+      instituicaoFinanceira: { eager: true },
     },
   },
 })
