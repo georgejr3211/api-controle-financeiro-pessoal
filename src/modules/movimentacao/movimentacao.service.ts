@@ -23,6 +23,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       WHERE id_pessoa = ${pessoaId}
       AND concluido = 1
       AND id_tipo_movimentacao = 1
+      AND status = 1
     ) -
     (
       SELECT SUM(total) AS total
@@ -30,6 +31,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       WHERE id_pessoa = ${pessoaId}
       AND concluido = 1
       AND id_tipo_movimentacao = 2
+      AND status = 1
     )
   AS total`;
 
@@ -49,12 +51,14 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       FROM movimentacoes m2
       WHERE id_pessoa = ${pessoaId}
       AND id_tipo_movimentacao = 1
+      AND status = 1
     ) -
     (
       SELECT SUM(total) AS total
       FROM movimentacoes m2
       WHERE id_pessoa = ${pessoaId}
       AND id_tipo_movimentacao = 2
+      AND status = 1
     )
   AS total`;
 
@@ -162,6 +166,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .andWhere('pessoa.id = :pessoaId', { pessoaId })
       .andWhere('categoria.status = 1')
       .andWhere('movimentacao.status = 1')
+      .andWhere('movimentacao.concluido = 1')
       .groupBy('categoria.id')
       .orderBy('value', 'DESC');
 
@@ -175,6 +180,16 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
     }
 
     const result = await qb.getRawMany();
+
+    return result;
+  }
+
+  async getTotalByCategoria(categoriaId: number, pessoaId: number) {
+    const result = await this.repo.createQueryBuilder('movimentacao')
+      .select('COALESCE(SUM(movimentacao.total), 0.00)::decimal AS total')
+      .where('movimentacao.categoria.id = :categoriaId', { categoriaId })
+      .andWhere('movimentacao.pessoa.id = :pessoaId', { pessoaId })
+      .getRawOne();
 
     return result;
   }
@@ -193,6 +208,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .innerJoin('movimentacao.pessoa', 'pessoa')
       .andWhere('pessoa.id = :pessoaId', { pessoaId })
       .andWhere('movimentacao.status = 1')
+      .andWhere('movimentacao.concluido = 1')
       .groupBy('movimentacao.dtConta')
       .addGroupBy('tipoMovimentacao.id')
       .orderBy('value', 'DESC');

@@ -148,6 +148,20 @@ export class MovimentacaoController {
     return res.status(HttpStatus.OK).send({ data: result });
   }
 
+  @Get('categoria/:categoriaId/total')
+  async getDespesaTotalByCategoria(
+    @Req() req,
+    @Res() res: Response,
+    @Param('categoriaId') categoriaId: number,
+  ) {
+    const result = await this.service.getTotalByCategoria(
+      categoriaId,
+      req.usuario.pessoa.id,
+    );
+
+    return res.status(HttpStatus.OK).send(result);
+  }
+
   @Get('movimentacoes-tipo-movimentacao')
   async getMovimentacoesGroupByTipoMovimentacao(
     @Req() req,

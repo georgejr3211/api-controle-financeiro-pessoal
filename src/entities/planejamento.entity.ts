@@ -24,11 +24,6 @@ export class Planejamento extends BaseColumn {
     receitaMensal: number;
 
     @ApiProperty()
-    @Max(1) // 100%
-    @Column({ name: 'percentual_despesa', type: 'decimal', precision: 3, scale: 2, nullable: false, default: 0 })
-    percentualDespesa: number;
-
-    @ApiProperty()
     @IsDefined({ groups: [CREATE] })
     @IsOptional({ groups: [UPDATE] })
     @ManyToOne(() => Pessoa, { nullable: false })

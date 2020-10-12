@@ -13,7 +13,8 @@ import { ApiTags } from '@nestjs/swagger';
     maxLimit: 10,
     sort: [{ field: 'id', order: 'DESC' }],
     join: {
-      pessoa: { eager: true }
+      pessoa: { eager: true },
+      categorias: { eager: true },
     },
   },
 })
