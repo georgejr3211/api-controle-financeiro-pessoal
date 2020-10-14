@@ -52,11 +52,13 @@ export class MovimentacaoController {
   }
 
   @Get('saldo')
-  async getSaldo(@Req() req, @Query('dtPeriodo') dtPeriodo: string) {
-    if (!dtPeriodo) {
-      dtPeriodo = moment.utc().format('YYYY-MM');
-    } else {
-      dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+  async getSaldo(@Req() req, @Query('dtPeriodo') dtPeriodo: string | string[]) {
+    if (dtPeriodo) {
+      if (Array.isArray(dtPeriodo)) {
+        dtPeriodo = dtPeriodo.map(dt => moment.utc(dt).format('YYYY-MM'));
+      } else {
+        dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+      }
     }
 
     const result = await this.service.getSaldo(
@@ -68,11 +70,14 @@ export class MovimentacaoController {
   }
 
   @Get('saldo/lancamento-futuro')
-  async getSaldoFuturo(@Req() req, @Query('dtPeriodo') dtPeriodo: string) {
-    if (!dtPeriodo) {
-      dtPeriodo = moment.utc().format('YYYY-MM');
-    } else {
-      dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+  async getSaldoFuturo(@Req() req, @Query('dtPeriodo') dtPeriodo: string | string[],
+  ) {
+    if (dtPeriodo) {
+      if (Array.isArray(dtPeriodo)) {
+        dtPeriodo = dtPeriodo.map(dt => moment.utc(dt).format('YYYY-MM'));
+      } else {
+        dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+      }
     }
 
     const result = await this.service.getSaldoFuturo(
@@ -87,14 +92,17 @@ export class MovimentacaoController {
   async getSaldoByTipoMovimentacao(
     @Req() req,
     @Param('tipoMovimentacao') tipoMovimentacao: number,
-    @Query('dtPeriodo') dtPeriodo: string,
     @Res() res: Response,
+    @Query('dtPeriodo') dtPeriodo: string | string[],
   ) {
-    if (!dtPeriodo) {
-      dtPeriodo = moment.utc().format('YYYY-MM');
-    } else {
-      dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+    if (dtPeriodo) {
+      if (Array.isArray(dtPeriodo)) {
+        dtPeriodo = dtPeriodo.map(dt => moment.utc(dt).format('YYYY-MM'));
+      } else {
+        dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+      }
     }
+
     const result = await this.service.getSaldoByTipoMovimentacao(
       req.usuario.pessoa.id,
       tipoMovimentacao,
@@ -108,11 +116,19 @@ export class MovimentacaoController {
     @Req() req,
     @Param('tipoMovimentacao') tipoMovimentacao: number,
     @Res() res: Response,
+    @Query('dtPeriodo') dtPeriodo: string | string[],
   ) {
-
+    if (dtPeriodo) {
+      if (Array.isArray(dtPeriodo)) {
+        dtPeriodo = dtPeriodo.map(dt => moment.utc(dt).format('YYYY-MM'));
+      } else {
+        dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+      }
+    }
     const result = await this.service.getCountContasByTipoMovimentacaoAndNaoConcluida(
       req.usuario.pessoa.id,
       tipoMovimentacao,
+      dtPeriodo,
     );
     return res.status(HttpStatus.OK).send(result);
   }
@@ -121,21 +137,27 @@ export class MovimentacaoController {
   async getCountContasAtrasadas(
     @Req() req,
     @Res() res: Response,
+    @Query('dtPeriodo') dtPeriodo: string | string[],
   ) {
+    if (dtPeriodo) {
+      if (Array.isArray(dtPeriodo)) {
+        dtPeriodo = dtPeriodo.map(dt => moment.utc(dt).format('YYYY-MM'));
+      } else {
+        dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+      }
+    }
 
-    const result = await this.service.getCountContasAtrasadas(req.usuario.pessoa.id);
+    const result = await this.service.getCountContasAtrasadas(req.usuario.pessoa.id, dtPeriodo);
     return res.status(HttpStatus.OK).send(result);
   }
 
   @Get('despesas-categoria')
   async getDespesasGroupByCategoria(
     @Req() req,
-    @Query('dtPeriodo') dtPeriodo: string | string[],
     @Res() res: Response,
+    @Query('dtPeriodo') dtPeriodo: string | string[],
   ) {
-    if (!dtPeriodo) {
-      dtPeriodo = moment.utc().format('YYYY-MM');
-    } else {
+    if (dtPeriodo) {
       if (Array.isArray(dtPeriodo)) {
         dtPeriodo = dtPeriodo.map(dt => moment.utc(dt).format('YYYY-MM'));
       } else {
@@ -154,10 +176,19 @@ export class MovimentacaoController {
     @Req() req,
     @Res() res: Response,
     @Param('categoriaId') categoriaId: number,
+    @Query('dtPeriodo') dtPeriodo: string | string[],
   ) {
+    if (dtPeriodo) {
+      if (Array.isArray(dtPeriodo)) {
+        dtPeriodo = dtPeriodo.map(dt => moment.utc(dt).format('YYYY-MM'));
+      } else {
+        dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+      }
+    }
     const result = await this.service.getTotalByCategoria(
       categoriaId,
       req.usuario.pessoa.id,
+      dtPeriodo,
     );
 
     return res.status(HttpStatus.OK).send(result);
@@ -167,25 +198,36 @@ export class MovimentacaoController {
   async getMovimentacoesGroupByTipoMovimentacao(
     @Req() req,
     @Res() res: Response,
+    @Query('dtPeriodo') dtPeriodo: string | string[],
   ) {
+    if (dtPeriodo) {
+      if (Array.isArray(dtPeriodo)) {
+        dtPeriodo = dtPeriodo.map(dt => moment.utc(dt).format('YYYY-MM'));
+      } else {
+        dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+      }
+    }
 
     const result = await this.service.getMovimentacoesGroupByTipoMovimentacao(
       req.usuario.pessoa.id,
+      dtPeriodo,
     );
     return res.status(HttpStatus.OK).send({ data: result });
   }
 
-  @Get('/tipo-movimentacao/:tipoMovimentacao/pendentes')
+  @Get('tipo-movimentacao/:tipoMovimentacao/pendentes')
   async getMovimentacoesPendentes(
     @Req() req,
     @Param('tipoMovimentacao') tipoMovimentacao: number,
-    @Query('dtPeriodo') dtPeriodo: string,
     @Res() res: Response,
+    @Query('dtPeriodo') dtPeriodo: string | string[],
   ) {
-    if (!dtPeriodo) {
-      dtPeriodo = moment.utc().format('YYYY-MM');
-    } else {
-      dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+    if (dtPeriodo) {
+      if (Array.isArray(dtPeriodo)) {
+        dtPeriodo = dtPeriodo.map(dt => moment.utc(dt).format('YYYY-MM'));
+      } else {
+        dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+      }
     }
     const result = await this.service.getMovimentacoesPendentes(
       req.usuario.pessoa.id,

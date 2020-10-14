@@ -49,7 +49,7 @@ export class Conta extends BaseColumn {
     @IsDefined({ groups: [CREATE] })
     @IsOptional({ groups: [UPDATE] })
     @Column({ nullable: false, default: 1, name: 'incluir_soma' })
-    incluirSoma: string;
+    incluirSoma: number;
 
     constructor(data: Omit<Conta, 'id'>, id?: number) {
         super();
