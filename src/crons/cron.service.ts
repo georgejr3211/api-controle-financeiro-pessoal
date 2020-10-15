@@ -41,8 +41,8 @@ export class CronService {
     await sendEmail(
       emails,
       `Você possui contas com lembrete para hoje`,
-      `Olá, <a href="${process.env.APP_BASE_URL}/auth/movimentacoes">Clique aqui</a> para visualizar seus lembretes`,
-      `<h1>Olá, <a href="${process.env.APP_BASE_URL}/auth/movimentacoes">Clique aqui</a> para visualizar seus lembretes</h1>`,
+      `Olá, <a href="${process.env.PORTAL_BASE_URL}/auth/movimentacoes">Clique aqui</a> para visualizar seus lembretes`,
+      `<h1>Olá, <a href="${process.env.PORTAL_BASE_URL}/auth/movimentacoes">Clique aqui</a> para visualizar seus lembretes</h1>`,
     );
 
     this.messageService.sendBulkSMSMessage(celulares, `Olá, acesse ${process.env.PORTAL_BASE_URL}/auth/movimentacoes para visualizar seus lembretes`);

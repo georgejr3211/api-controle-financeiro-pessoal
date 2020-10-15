@@ -35,7 +35,11 @@ export class UsuarioService extends TypeOrmCrudService<Usuario> {
     const userEmail = await this.findEmail(data.email);
 
     if (userEmail) {
-      throw new HttpException(MENSAGENS.EMAIL_DUPLICADO, HttpStatus.NO_CONTENT);
+      throw new HttpException(MENSAGENS.EMAIL_DUPLICADO, HttpStatus.BAD_REQUEST);
+    }
+
+    if (!data.senha) {
+      throw new HttpException(MENSAGENS.SENHA_NAO_INFORMADA, HttpStatus.BAD_REQUEST);
     }
 
     data.senha = hash(data.senha);

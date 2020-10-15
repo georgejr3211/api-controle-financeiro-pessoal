@@ -14,11 +14,11 @@ export class MessageService {
             this.httpService.post(this.urlWhatsAppMessage, {}, {
                 auth: {
                     username: process.env.NEXMO_USER,
-                    password: process.env.NEXMO_PASS
+                    password: process.env.NEXMO_PASS,
                 },
                 headers: {
                     'content-type': 'application/json',
-                    'accept': 'application/json'
+                    'accept': 'application/json',
                 },
                 data: {
                     from: { type: 'whatsapp', number: process.env.NEXMO_FROM_NUMBER },
@@ -26,7 +26,7 @@ export class MessageService {
                     message: {
                         content: {
                             type: 'text',
-                            text: message
+                            text: message,
                         }
                     }
                 }
