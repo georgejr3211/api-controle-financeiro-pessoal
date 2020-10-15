@@ -286,7 +286,13 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
         'tipoMovimentacao.id as id',
         'tipoMovimentacao.descricao as descricao',
         `TO_CHAR(movimentacao.dtConta, 'YYYY-MM-DD') as name`,
-        'SUM(movimentacao.total) as value',
+        // 'SUM(movimentacao.total) as value',
+        `CASE
+          WHEN tipoMovimentacao.id = 1 THEN SUM(movimentacao.total) ELSE 0
+        END AS total_receita`,
+        `CASE
+          WHEN tipoMovimentacao.id = 2 THEN SUM(movimentacao.total) ELSE 0
+        END AS total_despesa`,
       ])
       .innerJoin('movimentacao.categoria', 'categoria')
       .innerJoin('movimentacao.tipoMovimentacao', 'tipoMovimentacao')
@@ -297,8 +303,7 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .andWhere('movimentacao.concluido = 1')
       .andWhere('conta.incluirSoma = 1')
       .groupBy('movimentacao.dtConta')
-      .addGroupBy('tipoMovimentacao.id')
-      .orderBy('value', 'DESC');
+      .addGroupBy('tipoMovimentacao.id');
 
     if (dtPeriodo) {
       if (Array.isArray(dtPeriodo)) {
