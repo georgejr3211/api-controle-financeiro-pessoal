@@ -34,7 +34,7 @@ export class Conta extends BaseColumn {
     @ApiProperty({ type: () => InstituicaoFinanceira })
     @IsDefined({ groups: [CREATE] })
     @IsOptional({ groups: [UPDATE] })
-    @ManyToOne(() => InstituicaoFinanceira, { nullable: true })
+    @ManyToOne(() => InstituicaoFinanceira, { nullable: false })
     @JoinColumn({ name: 'id_instituicao_financeira' })
     instituicaoFinanceira: InstituicaoFinanceira;
 

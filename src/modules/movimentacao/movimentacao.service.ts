@@ -49,11 +49,8 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .createQueryBuilder()
       .select(sql)
       .getRawOne();
-      
-      console.log(result);
 
-    return result;
-    // return result && 'total' in result && result.total ? result : { total: '0.00' };
+    return result && 'total' in result && result.total ? result : { total: '0.00' };
   }
 
   async getSaldoFuturo(pessoaId: number, dtPeriodo: string | string[]) {
