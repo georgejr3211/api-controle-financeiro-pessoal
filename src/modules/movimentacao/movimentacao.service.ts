@@ -2,11 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import * as moment from 'moment-timezone';
-import { groupBy } from 'src/common/utils/array';
 
+import { groupBy } from '../../common/utils/array';
 import { Movimentacao } from '../../entities/movimentacao.entity';
 import { MENSAGENS } from './../../common/enums/mensagens';
-import { GetMovimentacoesDto } from './dto/get-movimentacoes.dto';
 
 @Injectable()
 export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
@@ -50,8 +49,11 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       .createQueryBuilder()
       .select(sql)
       .getRawOne();
+      
+      console.log(result);
 
-    return 'total' in result && result.total ? result : { total: '0.00' };
+    return result;
+    // return result && 'total' in result && result.total ? result : { total: '0.00' };
   }
 
   async getSaldoFuturo(pessoaId: number, dtPeriodo: string | string[]) {

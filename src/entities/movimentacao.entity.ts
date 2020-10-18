@@ -33,7 +33,7 @@ export class Movimentacao extends BaseColumn {
 
   @ApiProperty()
   @IsOptional()
-  @Column({ nullable: true, name: 'dt_conclusao' })
+  @Column({ nullable: true, name: 'dt_conclusao', type: 'date' })
   dtConclusao: Date;
 
   @ApiProperty()
