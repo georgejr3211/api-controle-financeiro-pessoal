@@ -12,6 +12,7 @@ import { CategoriaModule } from './modules/categoria/categoria.module';
 import { ContaModule } from './modules/conta/conta.module';
 import { InstituicaoFinanceiraModule } from './modules/instituicao-financeira/instituicao-financeira.module';
 import { MovimentacaoModule } from './modules/movimentacao/movimentacao.module';
+import { ObjetivoModule } from './modules/objetivo/objetivo.module';
 import { PessoaModule } from './modules/pessoa/pessoa.module';
 import { PlanejamentoModule } from './modules/planejamento/planejamento.module';
 import { TarefaModule } from './modules/tarefa/tarefa.module';
@@ -46,6 +47,7 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
     InstituicaoFinanceiraModule,
     TipoContaModule,
     ContaModule,
+    ObjetivoModule,
     CronModule,
   ],
   controllers: [AppController],
