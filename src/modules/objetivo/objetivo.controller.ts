@@ -1,6 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Crud } from '@nestjsx/crud';
+import { MENSAGENS } from 'src/common/enums/mensagens';
+import { Result } from 'src/common/interfaces/response';
 
 import { Objetivo } from '../../entities/objetivo.entity';
 import { QueryDto } from './../../dtos/query.dto';
@@ -27,9 +29,9 @@ export class ObjetivoController {
   constructor(public readonly service: ObjetivoService) { }
 
   @Get()
-  getAllObjetivosByPessoa(@Query() query: QueryDto) {
-    console.log(query);
-    return this.service.getAllObjetivosByPessoa(query);
+  async getAllObjetivosByPessoa(@Query() query: QueryDto) {
+    const result = await this.service.getAllObjetivosByPessoa(query);
+    return new Result({ data: result, error: null, total: result.length, message: MENSAGENS.SUCESSO });
   }
 
 }

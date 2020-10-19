@@ -13,11 +13,11 @@ export class ObjetivoService extends TypeOrmCrudService<Objetivo> {
   async getAllObjetivosByPessoa(query: QueryDto) {
     const qb = this.repo.createQueryBuilder('objetivo')
       .select(`
-        objetivo.id,
-        objetivo.descricao,
+        objetivo.id as id,
+        objetivo.descricao as descricao,
         objetivo.total,
-        objetivo.dtConclusao,
-        COALESCE(SUM('movimentacoes.total'), 0) AS totalDepositado
+        objetivo.dtConclusao as dtConclusao,
+        COALESCE(SUM(movimentacoes.total), 0) AS total_depositado
       `)
       .leftJoin('objetivo.movimentacoes', 'movimentacoes')
       .where('objetivo.pessoa = :pessoaId', { pessoaId: query.pessoaId })
