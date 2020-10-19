@@ -17,7 +17,8 @@ export class ObjetivoService extends TypeOrmCrudService<Objetivo> {
         objetivo.descricao as descricao,
         objetivo.total,
         objetivo.dtConclusao as dtConclusao,
-        COALESCE(SUM(movimentacoes.total), 0) AS total_depositado
+        COALESCE(SUM(movimentacoes.total), 0) AS total_depositado,
+        DATE_PART('day', objetivo.dt_conclusao::timestamp - current_date::timestamp) as dias_restantes
       `)
       .leftJoin('objetivo.movimentacoes', 'movimentacoes')
       .where('objetivo.pessoa = :pessoaId', { pessoaId: query.pessoaId })
