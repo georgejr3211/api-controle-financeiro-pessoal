@@ -244,6 +244,26 @@ export class MovimentacaoController {
     );
   }
 
+  @Get('balanco')
+  async getBalanco(
+    @Req() req,
+    @Res() res: Response,
+    @Query('dtPeriodo') dtPeriodo: string | string[],
+  ) {
+    if (dtPeriodo) {
+      if (Array.isArray(dtPeriodo)) {
+        dtPeriodo = dtPeriodo.map(dt => moment.utc(dt).format('YYYY-MM'));
+      } else {
+        dtPeriodo = moment.utc(dtPeriodo).format('YYYY-MM');
+      }
+    }
+    const result = await this.service.getBalanco(
+      req.usuario.pessoa.id,
+      dtPeriodo,
+    );
+    return res.status(HttpStatus.OK).send(result);
+  }
+
   @Override()
   async getMany(@ParsedRequest() req: CrudRequest) {
     const result: any = await this.base.getManyBase(req);

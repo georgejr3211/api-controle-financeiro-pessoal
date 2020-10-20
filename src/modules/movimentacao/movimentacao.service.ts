@@ -323,6 +323,54 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
     return result;
   }
 
+  async getBalanco(pessoaId: number, dtPeriodo: string | string[]) {
+    const hasPeriodo = dtPeriodo ?
+      Array.isArray(dtPeriodo)
+        ? `AND TO_CHAR(m2.dt_conta, 'YYYY-MM') BETWEEN '${dtPeriodo[0]}' AND '${dtPeriodo[1]}'`
+        : `AND TO_CHAR(m2.dt_conta, 'YYYY-MM') LIKE '${dtPeriodo}'`
+      : ``;
+
+    const sql = `
+		(SELECT sum(total)
+			FROM movimentacoes m2 
+			INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
+			WHERE m2.id_pessoa = ${pessoaId}
+			AND m2.id_tipo_movimentacao  = 1
+      AND c2.incluir_soma = 1
+			${hasPeriodo}
+      ) AS receita,
+		(SELECT sum(total)
+				FROM movimentacoes m2 
+				INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
+				WHERE m2.id_pessoa = ${pessoaId}
+				AND m2.id_tipo_movimentacao  = 2
+        AND c2.incluir_soma = 1
+				${hasPeriodo}
+        ) AS despesa,
+		((SELECT sum(total)
+			FROM movimentacoes m2 
+			INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
+			WHERE m2.id_pessoa = ${pessoaId}
+			AND m2.id_tipo_movimentacao  = 1
+      AND c2.incluir_soma = 1
+			${hasPeriodo}
+      ) - (SELECT sum(total)
+				FROM movimentacoes m2 
+				INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
+				WHERE m2.id_pessoa = ${pessoaId}
+				AND m2.id_tipo_movimentacao  = 2
+        AND c2.incluir_soma = 1
+				${hasPeriodo}
+        )) AS balanco`;
+
+    const result = await this.repo
+      .createQueryBuilder()
+      .select(sql)
+      .getRawOne();
+
+    return result ? result : '0.00';
+  }
+
   async getMovimentacoesPendentes(
     pessoaId: number,
     dtPeriodo: string | string[],
