@@ -331,44 +331,44 @@ export class MovimentacaoService extends TypeOrmCrudService<Movimentacao> {
       : ``;
 
     const sql = `
-		(SELECT sum(total)
-			FROM movimentacoes m2 
-			INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
-			WHERE m2.id_pessoa = ${pessoaId}
-			AND m2.id_tipo_movimentacao  = 1
+		COALESCE((SELECT sum(total)
+    FROM movimentacoes m2 
+    INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
+    WHERE m2.id_pessoa = ${pessoaId}
+    AND m2.id_tipo_movimentacao  = 1
+    AND c2.incluir_soma = 1
+    ${hasPeriodo}
+    ), 0.00) AS receita,
+		COALESCE((SELECT sum(total)
+    FROM movimentacoes m2 
+    INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
+    WHERE m2.id_pessoa = ${pessoaId}
+    AND m2.id_tipo_movimentacao  = 2
+    AND c2.incluir_soma = 1
+    ${hasPeriodo}
+    ), 0.00) AS despesa,
+		COALESCE(((SELECT sum(total)
+    FROM movimentacoes m2 
+    INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
+    WHERE m2.id_pessoa = ${pessoaId}
+    AND m2.id_tipo_movimentacao  = 1
+    AND c2.incluir_soma = 1
+    ${hasPeriodo}
+    ) - (SELECT sum(total)
+      FROM movimentacoes m2 
+      INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
+      WHERE m2.id_pessoa = ${pessoaId}
+      AND m2.id_tipo_movimentacao  = 2
       AND c2.incluir_soma = 1
-			${hasPeriodo}
-      ) AS receita,
-		(SELECT sum(total)
-				FROM movimentacoes m2 
-				INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
-				WHERE m2.id_pessoa = ${pessoaId}
-				AND m2.id_tipo_movimentacao  = 2
-        AND c2.incluir_soma = 1
-				${hasPeriodo}
-        ) AS despesa,
-		((SELECT sum(total)
-			FROM movimentacoes m2 
-			INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
-			WHERE m2.id_pessoa = ${pessoaId}
-			AND m2.id_tipo_movimentacao  = 1
-      AND c2.incluir_soma = 1
-			${hasPeriodo}
-      ) - (SELECT sum(total)
-				FROM movimentacoes m2 
-				INNER JOIN contas c2 ON c2.id_conta  = m2.id_conta 
-				WHERE m2.id_pessoa = ${pessoaId}
-				AND m2.id_tipo_movimentacao  = 2
-        AND c2.incluir_soma = 1
-				${hasPeriodo}
-        )) AS balanco`;
+      ${hasPeriodo}
+      )), 0.00) AS balanco`;
 
     const result = await this.repo
       .createQueryBuilder()
       .select(sql)
       .getRawOne();
 
-    return result ? result : '0.00';
+    return result;
   }
 
   async getMovimentacoesPendentes(
