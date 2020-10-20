@@ -282,25 +282,25 @@ export class MovimentacaoController {
         .tz(new Date(), process.env.TIMEZONE)
         .format('YYYY-MM-DD');
 
-      if (!res.dtConclusao) {
+      if (!res.concluido) {
         situacao = 'Pendente';
       }
 
       // Receita
-      if (res.dtConta.toString() >= dtHoje && res.tipoMovimentacao.id === 1 && !res.dtConclusao) {
+      if (res.dtConta.toString() >= dtHoje && res.tipoMovimentacao.id === 1 && !res.concluido) {
         situacao = 'À receber';
       }
 
       // Despesa
-      if (res.dtConta.toString() >= dtHoje && res.tipoMovimentacao.id === 2 && !res.dtConclusao) {
+      if (res.dtConta.toString() >= dtHoje && res.tipoMovimentacao.id === 2 && !res.concluido) {
         situacao = 'À vencer';
       }
 
-      if (dtHoje > res.dtConta.toString() && !res.dtConclusao) {
+      if (dtHoje > res.dtConta.toString() && !res.concluido) {
         situacao = 'Atrasada';
       }
 
-      if (res.dtConclusao) {
+      if (res.concluido) {
         situacao = 'Concluída';
       }
 

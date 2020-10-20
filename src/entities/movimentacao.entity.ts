@@ -97,8 +97,7 @@ export class Movimentacao extends BaseColumn {
   conta: Conta;
 
   @ApiProperty({ type: () => Objetivo })
-  @IsDefined({ groups: [CREATE] })
-  @IsOptional({ groups: [UPDATE] })
+  @IsOptional()
   @ManyToOne(() => Objetivo, { nullable: true })
   @JoinColumn({ name: 'id_objetivo' })
   objetivo: Objetivo;
