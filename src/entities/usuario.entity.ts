@@ -10,6 +10,7 @@ const { CREATE, UPDATE } = CrudValidationGroups;
 @Entity('usuarios')
 export class Usuario extends BaseColumn {
 
+  @ApiProperty()
   @IsOptional()
   @PrimaryGeneratedColumn({ name: 'id_usuario' })
   id: number;
@@ -41,8 +42,18 @@ export class Usuario extends BaseColumn {
   @Column({ type: 'smallint', nullable: false, default: 0 })
   status?: number;
 
+  @ApiProperty({ type: () => Pessoa })
   @IsOptional()
   @OneToOne(() => Pessoa, { nullable: false, cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'id_pessoa' })
   pessoa: Pessoa;
+
+  constructor(data: Omit<Usuario, 'id'>, id?: number) {
+    super();
+    Object.assign(this, data);
+
+    if (id) {
+      Object.assign(this.id, id);
+    }
+  }
 }

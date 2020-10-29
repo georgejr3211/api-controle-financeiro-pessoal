@@ -3,6 +3,7 @@ import { Crud } from '@nestjsx/crud';
 import { Pessoa } from '../../entities/pessoa.entity';
 
 import { PessoaService } from './pessoa.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Crud({
   model: {
@@ -17,6 +18,7 @@ import { PessoaService } from './pessoa.service';
     sort: [{ field: 'id', order: 'DESC' }],
   },
 })
+@ApiTags('Pessoa')
 @Controller('pessoas')
 export class PessoaController {
   constructor(private readonly service: PessoaService) { }

@@ -10,6 +10,7 @@ const { CREATE, UPDATE } = CrudValidationGroups;
 @Entity('tipos_movimentacao')
 export class TipoMovimentacao extends BaseColumn {
 
+  @ApiProperty()
   @IsOptional()
   @PrimaryGeneratedColumn({ name: 'id_tipo_movimentacao' })
   id?: number;
@@ -20,4 +21,12 @@ export class TipoMovimentacao extends BaseColumn {
   @Column({ length: 30, nullable: false, unique: true })
   descricao?: string;
 
+  constructor(data: Omit<TipoMovimentacao, 'id'>, id?: number) {
+    super();
+    Object.assign(this, data);
+
+    if (id) {
+      Object.assign(this.id, id);
+    }
+  }
 }

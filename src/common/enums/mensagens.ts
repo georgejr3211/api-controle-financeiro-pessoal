@@ -2,6 +2,7 @@ export enum MENSAGENS {
   SUCESSO = 'Operação realizada com sucesso!',
   REGISTRO_NAO_ENCONTRADO = 'Registro não encontrado',
   TOKEN_NAO_ENCONTRADO = 'Token não encontrado',
+  SENHA_NAO_INFORMADA = 'Senha não informada',
   SEM_PERMISSAO = 'Sem permissão',
   EMAIL_CONFIRMADO = 'Email já foi confirmado',
   EMAIL_NAO_CONFIRMADO = 'Email não foi confirmado',

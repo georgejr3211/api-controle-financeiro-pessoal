@@ -2,6 +2,7 @@ import { Categoria } from './../../entities/categoria.entity';
 import { Controller } from '@nestjs/common';
 import { CategoriaService } from './categoria.service';
 import { Crud } from '@nestjsx/crud';
+import { ApiTags } from '@nestjs/swagger';
 
 @Crud({
   model: {
@@ -11,8 +12,13 @@ import { Crud } from '@nestjsx/crud';
     alwaysPaginate: true,
     maxLimit: 10,
     sort: [{ field: 'id', order: 'DESC' }],
+    join: {
+      pessoa: { eager: true },
+      planejamento: { eager: true }
+    }
   },
 })
+@ApiTags('Categoria')
 @Controller('categorias')
 export class CategoriaController {
   constructor(private readonly service: CategoriaService) { }

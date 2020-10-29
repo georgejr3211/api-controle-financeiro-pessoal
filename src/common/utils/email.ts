@@ -1,6 +1,9 @@
 import * as nodemailer from 'nodemailer';
+import * as sgMail from '@sendgrid/mail';
 
-export async function sendEmail(email: string, subject: string, text: string, html: string) {
+export async function sendEmail(emails: string | string[], subject: string, text: string, html: string) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
@@ -11,13 +14,21 @@ export async function sendEmail(email: string, subject: string, text: string, ht
     },
   });
 
-  const info = await transporter.sendMail({
-    from: '"Contato TrocaQui 👻" <contato.trocaqui@gmail.com>',
-    to: email,
-    subject,
-    text,
-    html,
-  });
+  try {
+    await transporter.sendMail({
+      to: emails,
+      from: '"Financys 👻" <financys@tuamaeaquelaursa.com>',
+      subject,
+      text,
+      html,
+    });
 
-  console.log(info);
+    console.log('Email enviado com sucesso!');
+
+  } catch (error) {
+    console.log('error', error);
+  }
+
+  // const info = await transporter.sendMail();
+
 }
