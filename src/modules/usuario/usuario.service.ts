@@ -41,6 +41,7 @@ export class UsuarioService extends TypeOrmCrudService<Usuario> {
     if (!data.senha) {
       throw new HttpException(MENSAGENS.SENHA_NAO_INFORMADA, HttpStatus.BAD_REQUEST);
     }
+    
 
     data.senha = hash(data.senha);
 
@@ -49,7 +50,7 @@ export class UsuarioService extends TypeOrmCrudService<Usuario> {
     if (result) {
       const token = createToken({ ...result });
       const html = `<a href="${process.env.API_BASE_URL}/usuarios/confirmar-email?token=${token}">Confirmar cadastro</a>`;
-      await sendEmail(result.email, 'Confirmação de cadastro', html, html);
+      // await sendEmail(result.email, 'Confirmação de cadastro', html, html);
     }
 
     return { data: result };

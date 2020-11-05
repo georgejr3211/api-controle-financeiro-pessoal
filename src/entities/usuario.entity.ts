@@ -29,7 +29,7 @@ export class Usuario extends BaseColumn {
 
   @ApiProperty()
   @IsOptional({ groups: [UPDATE] })
-  @Column({ name: 'email_verificado', type: 'smallint', nullable: false, default: 0 })
+  @Column({ name: 'email_verificado', type: 'smallint', nullable: false, default: 1 })
   emailVerificado: number;
 
   @ApiProperty()
